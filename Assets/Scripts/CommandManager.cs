@@ -5,8 +5,6 @@ using UnityEngine;
 public class CommandManager : MonoBehaviour
 {
     [SerializeField]
-    private GameObject player;
-    [SerializeField]
     private GameObject map;
     [SerializeField]
     private GameObject pathfindingManager;
@@ -15,22 +13,23 @@ public class CommandManager : MonoBehaviour
 
     // Commands
 
-    public void FindPath(GameObject source, GameObject goal)
-    {
-        Pathfinder p = pathfindingManager.GetComponent<Pathfinder>();
-        Vector2 sPos = source.transform.localPosition;
-        Vector2 gPos = goal.transform.localPosition;
 
-        ResetPath();
-        path = p.GetPath(map.GetComponent<Map>(), sPos.x, sPos.y, gPos.x, gPos.y);
-        HighlightTiles(true);
-    }
 
     // Unity stuff
+    private void Awake()
+    {
+        EventManager.Instance.AddListener<PathfindEvent>(OnPathfindEvent);
+        EventManager.Instance.AddListener<DeselectEvent>(OnDeselectEvent);
+    }
 
-	private void Start()
+    private void OnDestroy()
+    {
+        EventManager.Instance.RemoveListener<PathfindEvent>(OnPathfindEvent);
+        EventManager.Instance.RemoveListener<DeselectEvent>(OnDeselectEvent);
+    }
+
+    private void Start()
 	{
-        player = GameObject.Find("Player");
         map = GameObject.Find("Map");
         pathfindingManager = GameObject.Find("PathfindingManager");
     }
@@ -41,6 +40,32 @@ public class CommandManager : MonoBehaviour
 	}
 
     // Helpers
+
+    private void OnDeselectEvent(DeselectEvent e)
+    {
+        ResetPath();
+    } 
+
+    private void OnPathfindEvent(PathfindEvent e)
+    {
+        if (e is PathfindCreateEvent)
+        {
+            PathfindCreateEvent ev = e as PathfindCreateEvent;
+            FindPath(ev.source, ev.goal);
+            Debug.Log("create");
+        }
+    }
+
+    private void FindPath(GameObject source, GameObject goal)
+    {
+        Pathfinder p = pathfindingManager.GetComponent<Pathfinder>();
+        Vector2 sPos = source.transform.localPosition;
+        Vector2 gPos = goal.transform.localPosition;
+
+        ResetPath();
+        path = p.GetPath(map.GetComponent<Map>(), sPos.x, sPos.y, gPos.x, gPos.y);
+        HighlightTiles(true);
+    }
 
     private void ResetPath()
     {

@@ -46,7 +46,6 @@ public class Map : MonoBehaviour
 
     public List<GameObject> GetNeighbors(int x, int y)
     {
-        Debug.Log(x + ", " + y);
         List<GameObject> neighbors = new List<GameObject>();
         /*for (int i = x - 1; i <= x + 1; i++)
         {
@@ -82,7 +81,6 @@ public class Map : MonoBehaviour
         int newX = (int)(x - transform.position.x);
         int newY = (int)(y - transform.position.y);
         Vector2 pos = new Vector2(newX, newY);
-        Debug.Log(pos);
         return pos;
     }
 
@@ -125,7 +123,7 @@ public class Map : MonoBehaviour
             placedTile = RandomTile();
         }
         Vector2 pos = placedTile.transform.position;
-        GameObject p = PlaceObject(pos.x, pos.y, -0.5f, player);
+        GameObject p = PlaceObject(pos.x, pos.y, -0.01f, player);
     }
 
     private GameObject PlaceTile(float x, float y, Tile tile)

@@ -67,6 +67,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6415288b892f88547bd1ce282f55af05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blocked: 0
+  neutralColor: {r: 1, g: 1, b: 1, a: 1}
+  highlightedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  movementCost: 1
 --- !u!212 &212187040092175192
 SpriteRenderer:
   m_ObjectHideFlags: 1

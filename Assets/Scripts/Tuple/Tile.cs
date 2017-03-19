@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileEvent : GameEvent
+public enum TileSelectType { None, Highlight, Move }
+
+public class TileSelectEvent : GameEvent
 {
-    public bool highlighted;
+    public TileSelectType selectType;
     public Tile tile;
-    public TileEvent(Tile tile, bool highlighted)
+    public TileSelectEvent(Tile tile, TileSelectType selectType)
     {
         this.tile = tile;
-        this.highlighted = highlighted;
+        this.selectType = selectType;
     }
 }
 
@@ -20,7 +22,7 @@ public class Tile : MonoBehaviour
     [SerializeField]
     private Color neutralColor = Color.white;
     [SerializeField]
-    private Color highlightedColor = Color.red;
+    private Color highlightedColor = Color.yellow;
     [SerializeField]
     private int movementCost = 1;
     [SerializeField]
@@ -62,22 +64,23 @@ public class Tile : MonoBehaviour
         GetComponent<Renderer>().material.color
             = isHighlighted ? highlightedColor : neutralColor;
     }
-    private void OnMouseDown()
-    {
-        TileEvent e = new TileEvent(this, false);
-        EventManager.Instance.Raise<TileEvent>(e);
-    }
-	
-	private void Update()
-    {
-		
-	}
 
     private void OnMouseEnter()
     {
+        RaiseTileEvent(TileSelectType.Highlight);
     }
-    private void OnMouseExit()
+    private void OnMouseOver()
     {
+        if (Input.GetMouseButtonDown(1))
+        {
+            RaiseTileEvent(TileSelectType.Move);
+        }
+    }
+
+    private void RaiseTileEvent(TileSelectType selectType)
+    {
+        TileSelectEvent e = new TileSelectEvent(this, selectType);
+        EventManager.Instance.Raise(e);
     }
 
 }
