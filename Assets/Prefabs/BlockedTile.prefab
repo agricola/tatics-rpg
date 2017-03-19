@@ -64,10 +64,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1992482166394234}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6415288b892f88547bd1ce282f55af05, type: 3}
+  m_Script: {fileID: 11500000, guid: 14c9868744386ce4da117d16fcdf6088, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   blocked: 1
+  neutralColor: {r: 1, g: 1, b: 1, a: 1}
+  highlightedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  movementCost: 1
 --- !u!212 &212436788501464702
 SpriteRenderer:
   m_ObjectHideFlags: 1

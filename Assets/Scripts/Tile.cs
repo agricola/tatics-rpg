@@ -27,6 +27,8 @@ public class Tile : MonoBehaviour
     private int movementCost = 1;
     [SerializeField]
     private MapPosition mapPosition;
+    [SerializeField]
+    private GameObject occupant;
 
     public bool Blocked
     {
@@ -51,6 +53,13 @@ public class Tile : MonoBehaviour
         set
         {
             mapPosition = value;
+        }
+    }
+    public GameObject Occupant
+    {
+        get
+        {
+            return occupant;
         }
     }
     /*
@@ -81,6 +90,14 @@ public class Tile : MonoBehaviour
     {
         TileSelectEvent e = new TileSelectEvent(this, selectType);
         EventManager.Instance.Raise(e);
+    }
+
+    public void MoveObjectTo(GameObject obj)
+    {
+        Vector3 pos = transform.position;
+        pos.z = -0.01f;
+        obj.transform.position = pos;
+        occupant = obj;
     }
 
 }

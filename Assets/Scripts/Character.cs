@@ -29,16 +29,20 @@ public class Character : MonoBehaviour
         EventManager.Instance.AddListener<DeselectEvent>(OnDeselectEvent);
     }
 
+    private void Start()
+    {
+        EventManager.Instance.Raise(new CharacterChangeEvent(this, true));
+    }
+
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<DeselectEvent>(OnDeselectEvent);
+        EventManager.Instance.Raise(new CharacterChangeEvent(this, false));
     }
 
     private void OnMouseDown()
     {
-        CharacterSelectEvent e = new CharacterSelectEvent(isGood, this);
-        EventManager.Instance.Raise<CharacterSelectEvent>(e);
-        ToggleHighlight();
+        EventManager.Instance.Raise(new CharacterSelectEvent(isGood, this));
     }
 
     private void OnDeselectEvent(DeselectEvent e)
@@ -46,9 +50,15 @@ public class Character : MonoBehaviour
         ToggleHighlight();
     }
 
-    private void ToggleHighlight()
+    public void ToggleHighlight()
     {
         isHighlighted = !isHighlighted;
+        highlightGameObject.SetActive(isHighlighted);
+    }
+
+    public void ToggleHighlight(bool isHighlighted)
+    {
+        this.isHighlighted = isHighlighted;
         highlightGameObject.SetActive(isHighlighted);
     }
 }

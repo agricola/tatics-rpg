@@ -19,6 +19,7 @@ public class CommandManager : MonoBehaviour
     private void Awake()
     {
         EventManager.Instance.AddListener<PathfindEvent>(OnPathfindEvent);
+        EventManager.Instance.AddListener<MoveCharacterEvent>(OnMoveEvent);
         EventManager.Instance.AddListener<DeselectEvent>(OnDeselectEvent);
     }
 
@@ -26,18 +27,18 @@ public class CommandManager : MonoBehaviour
     {
         EventManager.Instance.RemoveListener<PathfindEvent>(OnPathfindEvent);
         EventManager.Instance.RemoveListener<DeselectEvent>(OnDeselectEvent);
+        EventManager.Instance.RemoveListener<MoveCharacterEvent>(OnMoveEvent);
     }
 
     private void Start()
 	{
-        map = GameObject.Find("Map");
         pathfindingManager = GameObject.Find("PathfindingManager");
     }
 	
 	private void Update()
 	{
-		
-	}
+		if (!map) map = GameManager.Map.gameObject;
+    }
 
     // Helpers
 
@@ -52,7 +53,6 @@ public class CommandManager : MonoBehaviour
         {
             PathfindCreateEvent ev = e as PathfindCreateEvent;
             FindPath(ev.source, ev.goal);
-            Debug.Log("create");
         }
     }
 
@@ -89,5 +89,23 @@ public class CommandManager : MonoBehaviour
                 oldPath.Add(path.Current.Value.GetComponent<Tile>());
             }
         }
+    }
+
+    private void OnMoveEvent(MoveCharacterEvent e)
+    {
+        LinkedList<GameObject> movement = path.Tiles;
+        ResetPath();
+        EventManager.Instance.Raise(new InputToggleEvent(false));
+        StartCoroutine(MoveCharacter(movement, e.character));
+    }
+
+    private IEnumerator MoveCharacter(LinkedList<GameObject> tiles, Character c)
+    {
+        foreach (var tile in tiles)
+        {
+            yield return new WaitForSeconds(0.2f);
+            tile.GetComponent<Tile>().MoveObjectTo(c.gameObject);
+        }
+        EventManager.Instance.Raise(new InputToggleEvent(true));
     }
 }

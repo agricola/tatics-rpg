@@ -15,9 +15,9 @@ public class Pathfinder : MonoBehaviour
     public Dictionary<GameObject, GameObject> TravelDic(int x, int y, int goalX, int goalY)
     {
         PriorityQueue frontier = new PriorityQueue();
-        GameObject start = map.Tiles[x, y];
+        GameObject start = map.Tiles[x, y].gameObject;
         frontier.Enqueue(start, 0);
-        GameObject goal = map.Tiles[goalX, goalY];
+        GameObject goal = map.Tiles[goalX, goalY].gameObject;
 
         // <current, came_from>
         Dictionary<GameObject, GameObject> cameFrom = new Dictionary<GameObject, GameObject>();
@@ -62,8 +62,8 @@ public class Pathfinder : MonoBehaviour
     public Path GetPath(Map map, int x, int y, int goalX, int goalY)
     {
         this.map = map;
-        GameObject start = map.Tiles[x, y];
-        GameObject goal = map.Tiles[goalX, goalY];
+        GameObject start = map.Tiles[x, y].gameObject;
+        GameObject goal = map.Tiles[goalX, goalY].gameObject;
         Dictionary<GameObject, GameObject> travelDic = TravelDic(x, y, goalX, goalY);
         LinkedList<GameObject> path = new LinkedList<GameObject>();
         GameObject current = goal;

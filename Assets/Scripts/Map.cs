@@ -13,7 +13,7 @@ public class Map : MonoBehaviour
     [SerializeField]
     private int height = 0;
     [SerializeField]
-    private GameObject[,] tiles = new GameObject[0,0];
+    private Tile[,] tiles = new Tile[0,0];
     [SerializeField]
     private GameObject player;
 
@@ -31,7 +31,7 @@ public class Map : MonoBehaviour
             return height;
         }
     }
-    public GameObject[,] Tiles
+    public Tile[,] Tiles
     {
         get
         {
@@ -59,19 +59,19 @@ public class Map : MonoBehaviour
         }*/
         if (IsWithinBounds(x-1, y) && !Tiles[x - 1, y].GetComponent<Tile>().Blocked)
         {
-            neighbors.Add(Tiles[x-1, y]);
+            neighbors.Add(Tiles[x-1, y].gameObject);
         }
         if (IsWithinBounds(x + 1, y) && !Tiles[x + 1, y].GetComponent<Tile>().Blocked)
         {
-            neighbors.Add(Tiles[x + 1, y]);
+            neighbors.Add(Tiles[x + 1, y].gameObject);
         }
         if (IsWithinBounds(x, y - 1) && !Tiles[x, y - 1].GetComponent<Tile>().Blocked)
         {
-            neighbors.Add(Tiles[x, y - 1]);
+            neighbors.Add(Tiles[x, y - 1].gameObject);
         }
         if (IsWithinBounds(x, y + 1) && !Tiles[x, y + 1].GetComponent<Tile>().Blocked)
         {
-            neighbors.Add(Tiles[x, y + 1]);
+            neighbors.Add(Tiles[x, y + 1].gameObject);
         }
         return neighbors;
     }
@@ -91,7 +91,9 @@ public class Map : MonoBehaviour
 
     private void Start()
     {
+        EventManager.Instance.Raise(new MapChangeEvent(this));
         GenerateTiles();
+        
     }
 	
 	private void Update()
@@ -102,7 +104,7 @@ public class Map : MonoBehaviour
     private void GenerateTiles()
     {
         Random.InitState((int)System.DateTime.Now.Ticks);
-        tiles = new GameObject[width, height];
+        tiles = new Tile[width, height];
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
@@ -113,7 +115,7 @@ public class Map : MonoBehaviour
                 //template.MapPosition = new MapPosition(i, j);
                 GameObject tile = PlaceTile(x, y, template);
                 tile.GetComponent<Tile>().MapPosition = new MapPosition(i, j);
-                tiles[i, j] = tile;
+                tiles[i, j] = tile.GetComponent<Tile>();
             }
         }
 
@@ -124,6 +126,7 @@ public class Map : MonoBehaviour
         }
         Vector2 pos = placedTile.transform.position;
         GameObject p = PlaceObject(pos.x, pos.y, -0.01f, player);
+        placedTile.MoveObjectTo(p);
     }
 
     private GameObject PlaceTile(float x, float y, Tile tile)
