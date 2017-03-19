@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DeselectEvent : GameEvent { }
-
 public class InputManager : MonoBehaviour
 {
     [SerializeField]
@@ -58,6 +56,7 @@ public class InputManager : MonoBehaviour
     private void OnCharacterSelect(CharacterSelectEvent e)
     {
         if (!inputEnabled) return;
+        EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
         if (selected == e.character.gameObject)
         {
             selected = null;
@@ -68,7 +67,6 @@ public class InputManager : MonoBehaviour
             e.character.ToggleHighlight(true);
             selected = e.character.gameObject;
         }
-        
     }
 
     private void IssueMoveCommand(Tile tile)
@@ -82,11 +80,11 @@ public class InputManager : MonoBehaviour
     private void IssuePathfindCommand(Tile goal)
     {
         if (!selected || !inputEnabled) return;
-        GameObject map = GameObject.Find("Map");
-        GameObject source = map.GetComponent<Map>()
-            .Tiles[(int)selected.transform.localPosition.x,
+        Map map = GameManager.Map;
+        GameObject source = map.Tiles[(int)selected.transform.localPosition.x,
             (int)selected.transform.localPosition.y].gameObject;
-        PathfindCreateEvent e = new PathfindCreateEvent(source, goal.gameObject);
+        int limit = source.GetComponent<Tile>().Occupant.GetComponent<Character>().MovementLimit;
+        PathfindCreateEvent e = new PathfindCreateEvent(source, goal.gameObject, limit);
         EventManager.Instance.Raise<PathfindEvent>(e);
     }
 

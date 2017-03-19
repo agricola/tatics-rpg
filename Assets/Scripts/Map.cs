@@ -15,7 +15,7 @@ public class Map : MonoBehaviour
     [SerializeField]
     private Tile[,] tiles = new Tile[0,0];
     [SerializeField]
-    private GameObject player;
+    private Character baseCharacter;
 
     public int Width
     {
@@ -118,15 +118,18 @@ public class Map : MonoBehaviour
                 tiles[i, j] = tile.GetComponent<Tile>();
             }
         }
+        SpawnPlayer();
+        SpawnPlayer();
+    }
 
+    private void SpawnPlayer()
+    {
         Tile placedTile = RandomTile();
-        while (placedTile.Blocked)
+        GameObject p = PlaceObject(0, 0, -0.01f, baseCharacter.gameObject);
+        while (!placedTile.MoveObjectTo(p))
         {
             placedTile = RandomTile();
         }
-        Vector2 pos = placedTile.transform.position;
-        GameObject p = PlaceObject(pos.x, pos.y, -0.01f, player);
-        placedTile.MoveObjectTo(p);
     }
 
     private GameObject PlaceTile(float x, float y, Tile tile)

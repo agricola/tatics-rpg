@@ -2,18 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TileSelectType { None, Highlight, Move }
-
-public class TileSelectEvent : GameEvent
-{
-    public TileSelectType selectType;
-    public Tile tile;
-    public TileSelectEvent(Tile tile, TileSelectType selectType)
-    {
-        this.tile = tile;
-        this.selectType = selectType;
-    }
-}
+public enum HighlightType { None, Targeting, Radius }
 
 public class Tile : MonoBehaviour
 {
@@ -22,7 +11,11 @@ public class Tile : MonoBehaviour
     [SerializeField]
     private Color neutralColor = Color.white;
     [SerializeField]
-    private Color highlightedColor = Color.yellow;
+    private Color targetingColor = Color.yellow;
+    [SerializeField]
+    private Color radiusColor = Color.red;
+    [SerializeField]
+    private Color oldColor = Color.white;
     [SerializeField]
     private int movementCost = 1;
     [SerializeField]
@@ -68,16 +61,33 @@ public class Tile : MonoBehaviour
         mapPosition = new MapPosition(x, y);
     }*/
 
-    public void Highlight(bool isHighlighted)
+    public void Highlight(HighlightType highlight)
     {
-        GetComponent<Renderer>().material.color
-            = isHighlighted ? highlightedColor : neutralColor;
+        Color color = neutralColor;
+        switch (highlight)
+        {
+            case HighlightType.None:
+                color = oldColor;
+                break;
+            case HighlightType.Targeting:
+                color = targetingColor;
+                break;
+            case HighlightType.Radius:
+                color = radiusColor;
+                break;
+            default:
+                break;
+        }
+        Color possibleOldColor = GetComponent<Renderer>().material.color;
+        if (possibleOldColor != targetingColor) oldColor = possibleOldColor;
+        GetComponent<Renderer>().material.color = color;
     }
 
     private void OnMouseEnter()
     {
         RaiseTileEvent(TileSelectType.Highlight);
     }
+
     private void OnMouseOver()
     {
         if (Input.GetMouseButtonDown(1))
@@ -92,20 +102,30 @@ public class Tile : MonoBehaviour
         EventManager.Instance.Raise(e);
     }
 
-    public void MoveObjectTo(GameObject obj)
+    public bool MoveObjectTo(GameObject obj)
     {
+        if (!isWalkable()) return false;
         Vector3 pos = transform.position;
-        pos.z = -0.01f;
+        pos.z = obj.transform.position.z;
         obj.transform.position = pos;
         occupant = obj;
-        EventManager.Instance.Raise(new TileChangeEvent());
+        EventManager.Instance.Raise(new TileChangeEvent(obj));
         EventManager.Instance.AddListener<TileChangeEvent>(OnTileChange);
+        return true;
+    }
+
+    private bool isWalkable()
+    {
+        return !blocked && occupant == null;
     }
 
     private void OnTileChange(TileChangeEvent e)
     {
-        occupant = null;
-        EventManager.Instance.RemoveListener<TileChangeEvent>(OnTileChange);
+        if (e.leaver == occupant)
+        {
+            occupant = null;
+            EventManager.Instance.RemoveListener<TileChangeEvent>(OnTileChange);
+        }
     }
 
 }

@@ -21,12 +21,22 @@ public class Character : MonoBehaviour
     private bool isHighlighted = false;
     [SerializeField]
     private GameObject highlightGameObject;
+    [SerializeField]
+    private int movementLimit = 5;
+
+    public int MovementLimit
+    {
+        get
+        {
+            return movementLimit;
+        }
+    }
 
     private void Awake()
     {
         if (!highlightGameObject) highlightGameObject = transform.GetChild(0).gameObject;
         highlightGameObject.SetActive(false);
-        EventManager.Instance.AddListener<DeselectEvent>(OnDeselectEvent);
+        EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
     }
 
     private void Start()
@@ -36,7 +46,7 @@ public class Character : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<DeselectEvent>(OnDeselectEvent);
+        EventManager.Instance.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
         EventManager.Instance.Raise(new CharacterChangeEvent(this, false));
     }
 
@@ -45,9 +55,9 @@ public class Character : MonoBehaviour
         EventManager.Instance.Raise(new CharacterSelectEvent(isGood, this));
     }
 
-    private void OnDeselectEvent(DeselectEvent e)
+    private void OnCharacterSelect(CharacterSelectEvent e)
     {
-        ToggleHighlight();
+        if (e.character != this) ToggleHighlight(false);
     }
 
     public void ToggleHighlight()

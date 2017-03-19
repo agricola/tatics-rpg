@@ -8,25 +8,20 @@ public class CommandManager : MonoBehaviour
     private GameObject map;
     [SerializeField]
     private GameObject pathfindingManager;
+
     private Path path;
     private List<Tile> oldPath = new List<Tile>();
+    private int limit;
 
-    // Commands
-
-
-
-    // Unity stuff
     private void Awake()
     {
         EventManager.Instance.AddListener<PathfindEvent>(OnPathfindEvent);
         EventManager.Instance.AddListener<MoveCharacterEvent>(OnMoveEvent);
-        EventManager.Instance.AddListener<DeselectEvent>(OnDeselectEvent);
     }
 
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<PathfindEvent>(OnPathfindEvent);
-        EventManager.Instance.RemoveListener<DeselectEvent>(OnDeselectEvent);
         EventManager.Instance.RemoveListener<MoveCharacterEvent>(OnMoveEvent);
     }
 
@@ -40,19 +35,17 @@ public class CommandManager : MonoBehaviour
 		if (!map) map = GameManager.Map.gameObject;
     }
 
-    // Helpers
-
-    private void OnDeselectEvent(DeselectEvent e)
-    {
-        ResetPath();
-    } 
-
     private void OnPathfindEvent(PathfindEvent e)
     {
         if (e is PathfindCreateEvent)
         {
             PathfindCreateEvent ev = e as PathfindCreateEvent;
+            limit = ev.limit;
             FindPath(ev.source, ev.goal);
+        }
+        else if (e is CancelPathfindEvent)
+        {
+            ResetPath();
         }
     }
 
@@ -63,15 +56,16 @@ public class CommandManager : MonoBehaviour
         Vector2 gPos = goal.transform.localPosition;
 
         ResetPath();
-        path = p.GetPath(map.GetComponent<Map>(), sPos.x, sPos.y, gPos.x, gPos.y);
+        path = p.GetPath(map.GetComponent<Map>(), sPos.x, sPos.y, gPos.x, gPos.y, limit);
         HighlightTiles(true);
     }
 
     private void ResetPath()
     {
+        if (oldPath.Count <= 0) return;
         foreach (var tile in oldPath)
         {
-            tile.Highlight(false);
+            tile.Highlight(HighlightType.None);
         }
         oldPath = new List<Tile>();
         path = null;
@@ -81,11 +75,11 @@ public class CommandManager : MonoBehaviour
     {
         if (path != null)
         {
-            path.Current.Value.GetComponent<Tile>().Highlight(highlight);
+            path.Current.Value.GetComponent<Tile>().Highlight(HighlightType.Targeting);
             oldPath.Add(path.Current.Value.GetComponent<Tile>());
             while (path.Advance())
             {
-                path.Current.Value.GetComponent<Tile>().Highlight(highlight);
+                path.Current.Value.GetComponent<Tile>().Highlight(HighlightType.Targeting);
                 oldPath.Add(path.Current.Value.GetComponent<Tile>());
             }
         }
@@ -104,7 +98,10 @@ public class CommandManager : MonoBehaviour
         foreach (var tile in tiles)
         {
             yield return new WaitForSeconds(0.2f);
-            tile.GetComponent<Tile>().MoveObjectTo(c.gameObject);
+            if (!tile.GetComponent<Tile>().MoveObjectTo(c.gameObject))
+            {
+                break;
+            }
         }
         EventManager.Instance.Raise(new InputToggleEvent(true));
     }
