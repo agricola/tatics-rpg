@@ -98,6 +98,14 @@ public class Tile : MonoBehaviour
         pos.z = -0.01f;
         obj.transform.position = pos;
         occupant = obj;
+        EventManager.Instance.Raise(new TileChangeEvent());
+        EventManager.Instance.AddListener<TileChangeEvent>(OnTileChange);
+    }
+
+    private void OnTileChange(TileChangeEvent e)
+    {
+        occupant = null;
+        EventManager.Instance.RemoveListener<TileChangeEvent>(OnTileChange);
     }
 
 }
