@@ -7,6 +7,7 @@ public class RadiusManager : MonoBehaviour
 {
     private List<Tile> currentRadius;
     private Tile currentCenter;
+    
 
     private void Awake()
     {

@@ -5,11 +5,11 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     [SerializeField]
-    private GameObject selected;
+    private Character selected;
     [SerializeField]
     private bool inputEnabled = true;
 
-    public GameObject Selected
+    public Character Selected
     {
         get
         {
@@ -37,7 +37,13 @@ public class InputManager : MonoBehaviour
 	
 	private void Update()
 	{
-		
+        if (!inputEnabled) return;
+		if (Input.GetKeyDown(KeyCode.Return))
+        {
+            Debug.Log("end turn");
+            EventManager.Instance.Raise(new EndTurnEvent());
+            
+        }
 	}
 
     private void OnTileSelect(TileSelectEvent e)
@@ -55,10 +61,10 @@ public class InputManager : MonoBehaviour
 
     private void OnCharacterSelect(CharacterSelectEvent e)
     {
-        if (!inputEnabled) return;
+        if (!inputEnabled || e.character.Moved || !e.character.IsGood) return;
         EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
         EventManager.Instance.Raise(new UnhighlightTilesEvent());
-        if (selected == e.character.gameObject)
+        if (selected == e.character)
         {
             selected = null;
             e.character.ToggleHighlight(false);
@@ -67,7 +73,7 @@ public class InputManager : MonoBehaviour
         else
         {
             e.character.ToggleHighlight(true);
-            selected = e.character.gameObject;
+            selected = e.character;
             EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(e.character));
         }
     }
@@ -75,8 +81,9 @@ public class InputManager : MonoBehaviour
     private void IssueMoveCommand(Tile tile)
     {
         if (!inputEnabled) return;
-        EventManager.Instance.Raise(new MoveCharacterEvent(selected.GetComponent<Character>()));
-        selected.GetComponent<Character>().ToggleHighlight(false);
+        EventManager.Instance.Raise(new MoveCharacterEvent(selected));
+        selected.ToggleHighlight(false);
+        selected.Moved = true;
         selected = null;
     }
 

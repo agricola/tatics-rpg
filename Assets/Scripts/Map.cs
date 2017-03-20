@@ -118,11 +118,29 @@ public class Map : MonoBehaviour
                 tiles[i, j] = tile.GetComponent<Tile>();
             }
         }
-        SpawnPlayer();
-        SpawnPlayer();
+        CreateBattleGroups(2, 2);
     }
 
-    private void SpawnPlayer()
+    private void CreateBattleGroups(int good, int bad)
+    {
+        BattleGroup g = CreateBattleGroup(true, good);
+        BattleGroup b = CreateBattleGroup(false, bad);
+        EventManager.Instance.Raise(new SetBattleGroupsEvent(g, b));
+    }
+
+    private BattleGroup CreateBattleGroup(bool isGood, int amount)
+    {
+        List<Character> members = new List<Character>();
+        for (int i = 0; i < amount; i++)
+        {
+            Character c = SpawnCharacter();
+            c.IsGood = isGood;
+            members.Add(c);
+        }
+        return new BattleGroup(members, isGood);
+    }
+
+    private Character SpawnCharacter()
     {
         Tile placedTile = RandomTile();
         GameObject p = PlaceObject(0, 0, -0.01f, baseCharacter.gameObject);
@@ -130,6 +148,7 @@ public class Map : MonoBehaviour
         {
             placedTile = RandomTile();
         }
+        return p.GetComponent<Character>();
     }
 
     private GameObject PlaceTile(float x, float y, Tile tile)

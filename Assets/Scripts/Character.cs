@@ -2,19 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterSelectEvent : GameEvent
-{
-    public bool isGood;
-    public Character character;
-    public CharacterSelectEvent(bool isGood, Character character)
-    {
-        this.isGood = isGood;
-        this.character = character;
-    }
-}
-
 public class Character : MonoBehaviour
 {
+    [SerializeField]
+    private bool acted = false;
+    [SerializeField]
+    private bool moved = false;
     [SerializeField]
     private bool isGood = true;
     [SerializeField]
@@ -29,6 +22,40 @@ public class Character : MonoBehaviour
         get
         {
             return movementLimit;
+        }
+    }
+    public bool IsGood
+    {
+        get
+        {
+            return isGood;
+        }
+        set
+        {
+            if (!value) GetComponent<SpriteRenderer>().color = Color.red;
+            isGood = value;
+        }
+    }
+    public bool Acted
+    {
+        get
+        {
+            return acted;
+        }
+        set
+        {
+            acted = value;
+        }
+    }
+    public bool Moved
+    {
+        get
+        {
+            return moved;
+        }
+        set
+        {
+            moved = value;
         }
     }
 
@@ -70,6 +97,12 @@ public class Character : MonoBehaviour
     {
         this.isHighlighted = isHighlighted;
         highlightGameObject.SetActive(isHighlighted);
+    }
+
+    public void ResetActions()
+    {
+        moved = false;
+        acted = false;
     }
 }
 
