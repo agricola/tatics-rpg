@@ -16,4 +16,9 @@ public class MapPosition
     {
         return "(" + x + ", " + y + ")";
     }
+    public static MapPosition VectorToMapPosition(Vector2 vector)
+    {
+        return new MapPosition((int)vector.x, (int)vector.y);
+    }
+
 }

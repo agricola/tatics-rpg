@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum HighlightType { None, Targeting, Radius }
+public enum HighlightType { None, Old, Targeting, Radius }
 
 public class Tile : MonoBehaviour
 {
@@ -67,6 +67,9 @@ public class Tile : MonoBehaviour
         switch (highlight)
         {
             case HighlightType.None:
+                color = neutralColor;
+                break;
+            case HighlightType.Old:
                 color = oldColor;
                 break;
             case HighlightType.Targeting:
@@ -80,7 +83,17 @@ public class Tile : MonoBehaviour
         }
         Color possibleOldColor = GetComponent<Renderer>().material.color;
         if (possibleOldColor != targetingColor) oldColor = possibleOldColor;
+        if (color != neutralColor)
+        {
+            EventManager.Instance.AddListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
+        }
         GetComponent<Renderer>().material.color = color;
+    }
+
+    private void OnUnhighlightTilesEvent(UnhighlightTilesEvent e)
+    {
+        EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
+        Highlight(HighlightType.None);
     }
 
     private void OnMouseEnter()
@@ -114,7 +127,7 @@ public class Tile : MonoBehaviour
         return true;
     }
 
-    private bool isWalkable()
+    public bool isWalkable()
     {
         return !blocked && occupant == null;
     }

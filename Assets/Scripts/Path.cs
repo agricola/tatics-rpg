@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Path
 {
-    public LinkedList<GameObject> Tiles { get; private set; }
-    public LinkedListNode<GameObject> Current { get; private set; }
-    public Path(IEnumerable<GameObject> tiles, int limit = -1)
+    public LinkedList<Tile> Tiles { get; private set; }
+    public LinkedListNode<Tile> Current { get; private set; }
+    public Path(IEnumerable<Tile> tiles, int limit = -1)
     {
-        Tiles = new LinkedList<GameObject>(tiles);
+        Tiles = new LinkedList<Tile>(tiles);
         Tiles.RemoveFirst();
         while (limit > 0 && Tiles.Count > (limit))
         {
@@ -20,7 +20,7 @@ public class Path
     public bool Advance()
     {
         bool nextTileExists = false;
-        LinkedListNode<GameObject> next = Current.Next;
+        LinkedListNode<Tile> next = Current.Next;
         if (next != null)
         {
             Current = next;

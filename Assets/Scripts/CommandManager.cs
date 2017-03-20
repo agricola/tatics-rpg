@@ -45,7 +45,7 @@ public class CommandManager : MonoBehaviour
         }
         else if (e is CancelPathfindEvent)
         {
-            ResetPath();
+            ResetPath(true);
         }
     }
 
@@ -57,15 +57,17 @@ public class CommandManager : MonoBehaviour
 
         ResetPath();
         path = p.GetPath(map.GetComponent<Map>(), sPos.x, sPos.y, gPos.x, gPos.y, limit);
-        HighlightTiles(true);
+        HighlightTiles(false);
     }
 
-    private void ResetPath()
+    private void ResetPath(bool noHighlight = false)
     {
+        //HighlightType h = noHighlight ? HighlightType.None : HighlightType.Old;
+        HighlightType h = HighlightType.Old;
         if (oldPath.Count <= 0) return;
         foreach (var tile in oldPath)
         {
-            tile.Highlight(HighlightType.None);
+            tile.Highlight(h);
         }
         oldPath = new List<Tile>();
         path = null;
@@ -87,18 +89,18 @@ public class CommandManager : MonoBehaviour
 
     private void OnMoveEvent(MoveCharacterEvent e)
     {
-        LinkedList<GameObject> movement = path.Tiles;
-        ResetPath();
+        LinkedList<Tile> movement = path.Tiles;
+        ResetPath(true);
         EventManager.Instance.Raise(new InputToggleEvent(false));
         StartCoroutine(MoveCharacter(movement, e.character));
     }
 
-    private IEnumerator MoveCharacter(LinkedList<GameObject> tiles, Character c)
+    private IEnumerator MoveCharacter(LinkedList<Tile> tiles, Character c)
     {
         foreach (var tile in tiles)
         {
             yield return new WaitForSeconds(0.2f);
-            if (!tile.GetComponent<Tile>().MoveObjectTo(c.gameObject))
+            if (!tile.MoveObjectTo(c.gameObject))
             {
                 break;
             }

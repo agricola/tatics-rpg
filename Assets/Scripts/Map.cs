@@ -44,34 +44,29 @@ public class Map : MonoBehaviour
         return (x < Width && y < Height && x >= 0 && y >= 0) ? true : false;
     }
 
-    public List<GameObject> GetNeighbors(int x, int y)
+    public List<Tile> GetNeighbors(MapPosition pos)
     {
-        List<GameObject> neighbors = new List<GameObject>();
-        /*for (int i = x - 1; i <= x + 1; i++)
+        return GetNeighbors(pos.X, pos.Y);
+    }
+
+    public List<Tile> GetNeighbors(int x, int y)
+    {
+        List<Tile> neighbors = new List<Tile>();
+        if (IsWithinBounds(x-1, y) && Tiles[x - 1, y].GetComponent<Tile>().isWalkable())
         {
-            for (int j = y - 1; j <= y + 1; j++)
-            {
-                if (IsWithinBounds(i, j) && !Tiles[i, j].GetComponent<Tile>().Blocked)
-                {
-                    neighbors.Add(Tiles[i, j]);
-                }
-            }
-        }*/
-        if (IsWithinBounds(x-1, y) && !Tiles[x - 1, y].GetComponent<Tile>().Blocked)
-        {
-            neighbors.Add(Tiles[x-1, y].gameObject);
+            neighbors.Add(Tiles[x-1, y]);
         }
-        if (IsWithinBounds(x + 1, y) && !Tiles[x + 1, y].GetComponent<Tile>().Blocked)
+        if (IsWithinBounds(x + 1, y) && Tiles[x + 1, y].GetComponent<Tile>().isWalkable())
         {
-            neighbors.Add(Tiles[x + 1, y].gameObject);
+            neighbors.Add(Tiles[x + 1, y]);
         }
-        if (IsWithinBounds(x, y - 1) && !Tiles[x, y - 1].GetComponent<Tile>().Blocked)
+        if (IsWithinBounds(x, y - 1) && Tiles[x, y - 1].GetComponent<Tile>().isWalkable())
         {
-            neighbors.Add(Tiles[x, y - 1].gameObject);
+            neighbors.Add(Tiles[x, y - 1]);
         }
-        if (IsWithinBounds(x, y + 1) && !Tiles[x, y + 1].GetComponent<Tile>().Blocked)
+        if (IsWithinBounds(x, y + 1) && Tiles[x, y + 1].GetComponent<Tile>().isWalkable())
         {
-            neighbors.Add(Tiles[x, y + 1].gameObject);
+            neighbors.Add(Tiles[x, y + 1]);
         }
         return neighbors;
     }
@@ -87,6 +82,11 @@ public class Map : MonoBehaviour
     public Vector2 MapPosition(Vector2 pos)
     {
         return MapPosition(pos.x, pos.y);
+    }
+
+    public Tile TileAtMapPosition(MapPosition pos)
+    {
+        return tiles[pos.X, pos.Y];
     }
 
     private void Start()

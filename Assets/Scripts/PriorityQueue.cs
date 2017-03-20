@@ -5,7 +5,7 @@ using UnityEngine;
 public class PriorityQueue
 {
 
-    private List<Tuple<GameObject, double>> elements = new List<Tuple<GameObject, double>>();
+    private List<Tuple<Tile, double>> elements = new List<Tuple<Tile, double>>();
 
     public int Count
     {
@@ -14,7 +14,7 @@ public class PriorityQueue
             return elements.Count;
         }
     }
-    public List<Tuple<GameObject, double>> Elements
+    public List<Tuple<Tile, double>> Elements
     {
         get
         {
@@ -22,12 +22,12 @@ public class PriorityQueue
         }
     }
 
-    public void Enqueue(GameObject item, double priority)
+    public void Enqueue(Tile item, double priority)
     {
         elements.Add(Tuple.Create(item, priority));
     }
 
-    public GameObject Dequeue()
+    public Tile Dequeue()
     {
         int bestIndex = 0;
         for (int i = 0; i < elements.Count; i++)
@@ -37,7 +37,7 @@ public class PriorityQueue
                 bestIndex = i;
             }
         }
-        GameObject bestItem = elements[bestIndex].Item1;
+        Tile bestItem = elements[bestIndex].Item1;
         elements.RemoveAt(bestIndex);
         return bestItem;
     }

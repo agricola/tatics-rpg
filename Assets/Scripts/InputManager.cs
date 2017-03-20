@@ -56,7 +56,6 @@ public class InputManager : MonoBehaviour
     private void OnCharacterSelect(CharacterSelectEvent e)
     {
         if (!inputEnabled) return;
-        EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
         if (selected == e.character.gameObject)
         {
             selected = null;
