@@ -56,15 +56,19 @@ public class InputManager : MonoBehaviour
     private void OnCharacterSelect(CharacterSelectEvent e)
     {
         if (!inputEnabled) return;
+        EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
+        EventManager.Instance.Raise(new UnhighlightTilesEvent());
         if (selected == e.character.gameObject)
         {
             selected = null;
             e.character.ToggleHighlight(false);
+            EventManager.Instance.Raise<RadiusEvent>(new DestroyRadiusEvent());
         }
         else
         {
             e.character.ToggleHighlight(true);
             selected = e.character.gameObject;
+            EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(e.character));
         }
     }
 

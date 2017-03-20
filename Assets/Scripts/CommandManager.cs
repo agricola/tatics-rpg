@@ -62,8 +62,7 @@ public class CommandManager : MonoBehaviour
 
     private void ResetPath(bool noHighlight = false)
     {
-        //HighlightType h = noHighlight ? HighlightType.None : HighlightType.Old;
-        HighlightType h = HighlightType.Old;
+        HighlightType h = noHighlight ? HighlightType.None : HighlightType.Old;
         if (oldPath.Count <= 0) return;
         foreach (var tile in oldPath)
         {
