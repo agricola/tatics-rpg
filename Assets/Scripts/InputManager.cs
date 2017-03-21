@@ -10,6 +10,8 @@ public class InputManager : MonoBehaviour
     private bool inputEnabled = true;
     [SerializeField]
     private bool lockSelected = false;
+    [SerializeField]
+    private IInputState state;
 
     public Character Selected
     {
@@ -25,114 +27,80 @@ public class InputManager : MonoBehaviour
 
 	private void Awake()
 	{
+        if (state != null) state.Exit();
+        state = new NoSelectionState();
+        state.Enter();
         EventManager.Instance.AddListener<TileSelectEvent>(OnTileSelect);
         EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
         EventManager.Instance.AddListener<InputToggleEvent>(OnInputToggle);
+        EventManager.Instance.AddListener<SetInputStateEvent>(OnInputStateChange);
     }
 
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<TileSelectEvent>(OnTileSelect);
-        EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
+        EventManager.Instance.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
         EventManager.Instance.RemoveListener<InputToggleEvent>(OnInputToggle);
+        EventManager.Instance.RemoveListener<SetInputStateEvent>(OnInputStateChange);
     }
-	
-	private void Update()
-	{
-        if (!inputEnabled) return;
-		if (Input.GetKeyDown(KeyCode.Return))
-        {
-            Debug.Log("end turn");
-            EventManager.Instance.Raise(new EndTurnEvent());
-            
-        }
-	}
+
+    private void Update()
+    {
+        state.HandleInput();
+    }
+
+    private void OnInputStateChange(SetInputStateEvent e)
+    {
+        ChangeState(e.state, e.enterObj);
+    }
+
+    private void ChangeState(IInputState state, Character enterObj = null)
+    {
+        this.state.Exit();
+        this.state = state;
+        this.state.Enter(enterObj);
+    }
 
     private void OnTileSelect(TileSelectEvent e)
     {
-        if (!selected || !inputEnabled || selected.Moved) return;
-        if (e.selectType == TileSelectType.Highlight)
-        {
-            IssuePathfindCommand(e.tile);
-        }
-        else if (e.selectType == TileSelectType.Move)
-        {
-            IssueMoveCommand(e.tile);
-        }
+        //if (!inputEnabled) return;
+        state.OnTileSelect(e);
     }
 
     private void OnCharacterSelect(CharacterSelectEvent e)
     {
-        if (!inputEnabled || e.character.Moved || !e.character.IsGood) return;
-        if (selected == e.character)
-        {
-            EndPathfinding();
-            selected = null;
-            EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(false, false, true));
-            e.character.ToggleHighlight(false);
-            EventManager.Instance.Raise<RadiusEvent>(new DestroyRadiusEvent());
-            lockSelected = false;
-        }
-        else
-        {
-            if (lockSelected) return;
-            EndPathfinding();
-            EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(true, true, true));
-            e.character.ToggleHighlight(true);
-            selected = e.character;
-            EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(e.character));
-            lockSelected = true;
-        }
-    }
-
-    private void EndPathfinding()
-    {
-        EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
-        EventManager.Instance.Raise(new UnhighlightTilesEvent());
-    }
-
-    private void IssueMoveCommand(Tile tile)
-    {
-        if (!inputEnabled) return;
-        EventManager.Instance.Raise(new MoveCharacterEvent(selected));
-        selected.ToggleHighlight(false);
-        selected.Moved = true;
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(true, true, true));
-    }
-
-    private void IssuePathfindCommand(Tile goal)
-    {
-        if (!selected || !inputEnabled) return;
-        Map map = GameManager.Map;
-        Tile source = map.Tiles[(int)selected.transform.localPosition.x,
-            (int)selected.transform.localPosition.y];
-        int limit = source.GetComponent<Tile>().Occupant.GetComponent<Character>().MovementLimit;
-        PathfindCreateEvent e = new PathfindCreateEvent(source, goal, limit);
-        EventManager.Instance.Raise<PathfindEvent>(e);
+        if (e.character.Moved) return;
+        state.OnCharacterSelect(e);
     }
 
     private void OnInputToggle(InputToggleEvent e)
     {
-        inputEnabled = e.inputEnabled;
+        //inputEnabled = e.inputEnabled;
+        if (e.inputEnabled)
+        {
+            ChangeState(new NoSelectionState());
+        }
+        else
+        {
+            ChangeState(new NoInputState());
+        }
     }
-
+    /*
     private void FinishSelected()
     {
         selected.Acted = true;
         lockSelected = false;
         selected = null;
-    }
+    }*/
 
     public void PressWaitButton()
     {
-        FinishSelected();
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(false, false, true));
+        ChangeState(new NoSelectionState());
     }
 
     public void PressEndButton()
     {
-        selected = null;
-        lockSelected = false;
+        //ChangeState(new NoInputState());
         EventManager.Instance.Raise(new EndTurnEvent());
     }
 }
