@@ -92,6 +92,7 @@ public class CommandManager : MonoBehaviour
         LinkedList<Tile> movement = path.Tiles;
         ResetPath(true);
         EventManager.Instance.Raise(new InputToggleEvent(false));
+        EventManager.Instance.Raise(new ToggleWalkEvent(true, e.character.gameObject));
         StartCoroutine(MoveCharacter(movement, e.character));
     }
 
@@ -106,5 +107,6 @@ public class CommandManager : MonoBehaviour
             }
         }
         EventManager.Instance.Raise(new InputToggleEvent(true));
+        EventManager.Instance.Raise(new ToggleWalkEvent(false, c.gameObject));
     }
 }

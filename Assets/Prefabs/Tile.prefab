@@ -69,8 +69,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blocked: 0
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
-  highlightedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  targetingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  radiusColor: {r: 1, g: 0, b: 0, a: 1}
+  oldColor: {r: 1, g: 1, b: 1, a: 1}
   movementCost: 1
+  occupant: {fileID: 0}
 --- !u!212 &212187040092175192
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -102,7 +105,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 0826ceb3ac86e1840984a9f4f1213f75, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 62315fa6721f3564990c725796fb8264, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

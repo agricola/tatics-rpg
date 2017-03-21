@@ -140,7 +140,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0.375, b: 0.11120689, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -151,7 +151,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.5
+  orthographic size: 4.2
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -172,7 +172,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 64159777}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: -1.5, y: -1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -251,8 +251,8 @@ MonoBehaviour:
     type: 2}
   templateBlockedTile: {fileID: 114080731790344026, guid: 8518ec7827074f64eaa3395562978a5d,
     type: 2}
-  width: 14
-  height: 10
+  width: 11
+  height: 8
   baseCharacter: {fileID: 114572278012544630, guid: 7f7f32c6e8d57fa4fb7a192c011827d5,
     type: 2}
 --- !u!4 &774752437

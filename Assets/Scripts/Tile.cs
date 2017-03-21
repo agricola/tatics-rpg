@@ -120,8 +120,14 @@ public class Tile : MonoBehaviour
         if (!isWalkable()) return false;
         Vector3 pos = transform.position;
         pos.z = obj.transform.position.z;
+        AnimationManager anim = obj.GetComponent<AnimationManager>();
+        if (anim)
+        {
+            anim.CheckScale(pos.x - obj.transform.position.x);
+        }
         obj.transform.position = pos;
         occupant = obj;
+
         EventManager.Instance.Raise(new TileChangeEvent(obj));
         EventManager.Instance.AddListener<TileChangeEvent>(OnTileChange);
         return true;
