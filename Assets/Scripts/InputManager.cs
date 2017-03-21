@@ -8,6 +8,8 @@ public class InputManager : MonoBehaviour
     private Character selected;
     [SerializeField]
     private bool inputEnabled = true;
+    [SerializeField]
+    private bool lockSelected = false;
 
     public Character Selected
     {
@@ -48,7 +50,7 @@ public class InputManager : MonoBehaviour
 
     private void OnTileSelect(TileSelectEvent e)
     {
-        if (!selected || !inputEnabled) return;
+        if (!selected || !inputEnabled || selected.Moved) return;
         if (e.selectType == TileSelectType.Highlight)
         {
             IssuePathfindCommand(e.tile);
@@ -62,20 +64,31 @@ public class InputManager : MonoBehaviour
     private void OnCharacterSelect(CharacterSelectEvent e)
     {
         if (!inputEnabled || e.character.Moved || !e.character.IsGood) return;
-        EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
-        EventManager.Instance.Raise(new UnhighlightTilesEvent());
         if (selected == e.character)
         {
+            EndPathfinding();
             selected = null;
+            EventManager.Instance.Raise(new ToggleCombatMenuEvent(false));
             e.character.ToggleHighlight(false);
             EventManager.Instance.Raise<RadiusEvent>(new DestroyRadiusEvent());
+            lockSelected = false;
         }
         else
         {
+            if (lockSelected) return;
+            EndPathfinding();
+            EventManager.Instance.Raise(new ToggleCombatMenuEvent(true));
             e.character.ToggleHighlight(true);
             selected = e.character;
             EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(e.character));
+            lockSelected = true;
         }
+    }
+
+    private void EndPathfinding()
+    {
+        EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
+        EventManager.Instance.Raise(new UnhighlightTilesEvent());
     }
 
     private void IssueMoveCommand(Tile tile)
@@ -84,7 +97,7 @@ public class InputManager : MonoBehaviour
         EventManager.Instance.Raise(new MoveCharacterEvent(selected));
         selected.ToggleHighlight(false);
         selected.Moved = true;
-        selected = null;
+        EventManager.Instance.Raise(new ToggleCombatMenuEvent(true));
     }
 
     private void IssuePathfindCommand(Tile goal)
@@ -101,5 +114,26 @@ public class InputManager : MonoBehaviour
     private void OnInputToggle(InputToggleEvent e)
     {
         inputEnabled = e.inputEnabled;
+    }
+
+    private void FinishSelected()
+    {
+        selected.Acted = true;
+        lockSelected = false;
+        selected = null;
+    }
+
+    public void PressWaitButton()
+    {
+        FinishSelected();
+        EventManager.Instance.Raise(new ToggleCombatMenuEvent(false));
+    }
+
+    public void PressEndButton()
+    {
+        selected = null;
+        lockSelected = false;
+        EventManager.Instance.Raise(new EndTurnEvent());
+        EventManager.Instance.Raise(new ToggleCombatMenuEvent(false));
     }
 }

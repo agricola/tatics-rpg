@@ -84,7 +84,7 @@ public class Character : MonoBehaviour
 
     private void OnCharacterSelect(CharacterSelectEvent e)
     {
-        if (e.character != this) ToggleHighlight(false);
+        //if (e.character != this) ToggleHighlight(false);
     }
 
     public void ToggleHighlight()
