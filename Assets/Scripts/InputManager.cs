@@ -91,10 +91,10 @@ public class InputManager : MonoBehaviour
     {
         if (!selected || !inputEnabled) return;
         Map map = GameManager.Map;
-        GameObject source = map.Tiles[(int)selected.transform.localPosition.x,
-            (int)selected.transform.localPosition.y].gameObject;
+        Tile source = map.Tiles[(int)selected.transform.localPosition.x,
+            (int)selected.transform.localPosition.y];
         int limit = source.GetComponent<Tile>().Occupant.GetComponent<Character>().MovementLimit;
-        PathfindCreateEvent e = new PathfindCreateEvent(source, goal.gameObject, limit);
+        PathfindCreateEvent e = new PathfindCreateEvent(source, goal, limit);
         EventManager.Instance.Raise<PathfindEvent>(e);
     }
 

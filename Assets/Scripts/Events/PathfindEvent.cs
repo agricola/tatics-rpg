@@ -8,11 +8,11 @@ public class CancelPathfindEvent : PathfindEvent { }
 
 public class PathfindCreateEvent : PathfindEvent
 {
-    public GameObject source;
-    public GameObject goal;
+    public Tile source;
+    public Tile goal;
     public int limit;
 
-    public PathfindCreateEvent(GameObject source, GameObject goal, int limit)
+    public PathfindCreateEvent(Tile source, Tile goal, int limit)
     {
         this.source = source;
         this.goal = goal;

@@ -49,14 +49,14 @@ public class CommandManager : MonoBehaviour
         }
     }
 
-    private void FindPath(GameObject source, GameObject goal)
+    private void FindPath(Tile source, Tile goal)
     {
         Pathfinder p = pathfindingManager.GetComponent<Pathfinder>();
-        Vector2 sPos = source.transform.localPosition;
-        Vector2 gPos = goal.transform.localPosition;
+        MapPosition sPos = source.MapPosition;
+        MapPosition gPos = goal.MapPosition;
 
         ResetPath();
-        path = p.GetPath(map.GetComponent<Map>(), sPos.x, sPos.y, gPos.x, gPos.y, limit);
+        path = p.GetPath(map.GetComponent<Map>(), sPos.X, sPos.Y, gPos.X, gPos.Y, limit);
         HighlightTiles(false);
     }
 
@@ -76,7 +76,8 @@ public class CommandManager : MonoBehaviour
     {
         if (path != null)
         {
-            path.Current.Value.GetComponent<Tile>().Highlight(HighlightType.Targeting);
+            if (path.Current == null) return;
+            path.Current.Value.Highlight(HighlightType.Targeting);
             oldPath.Add(path.Current.Value.GetComponent<Tile>());
             while (path.Advance())
             {

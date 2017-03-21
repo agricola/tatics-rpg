@@ -143,7 +143,8 @@ public class Map : MonoBehaviour
     private Character SpawnCharacter()
     {
         Tile placedTile = RandomTile();
-        GameObject p = PlaceObject(0, 0, -0.01f, baseCharacter.gameObject);
+        GameObject p = PlaceObject(0, 0, -.2f, baseCharacter.gameObject);
+        //p.transform.rotation = Quaternion.Euler(-15, 0, 0);
         while (!placedTile.MoveObjectTo(p))
         {
             placedTile = RandomTile();
