@@ -68,7 +68,7 @@ public class InputManager : MonoBehaviour
         {
             EndPathfinding();
             selected = null;
-            EventManager.Instance.Raise(new ToggleCombatMenuEvent(false));
+            EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(false, false, true));
             e.character.ToggleHighlight(false);
             EventManager.Instance.Raise<RadiusEvent>(new DestroyRadiusEvent());
             lockSelected = false;
@@ -77,7 +77,7 @@ public class InputManager : MonoBehaviour
         {
             if (lockSelected) return;
             EndPathfinding();
-            EventManager.Instance.Raise(new ToggleCombatMenuEvent(true));
+            EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(true, true, true));
             e.character.ToggleHighlight(true);
             selected = e.character;
             EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(e.character));
@@ -97,7 +97,7 @@ public class InputManager : MonoBehaviour
         EventManager.Instance.Raise(new MoveCharacterEvent(selected));
         selected.ToggleHighlight(false);
         selected.Moved = true;
-        EventManager.Instance.Raise(new ToggleCombatMenuEvent(true));
+        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(true, true, true));
     }
 
     private void IssuePathfindCommand(Tile goal)
@@ -126,7 +126,7 @@ public class InputManager : MonoBehaviour
     public void PressWaitButton()
     {
         FinishSelected();
-        EventManager.Instance.Raise(new ToggleCombatMenuEvent(false));
+        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(false, false, true));
     }
 
     public void PressEndButton()
@@ -134,6 +134,5 @@ public class InputManager : MonoBehaviour
         selected = null;
         lockSelected = false;
         EventManager.Instance.Raise(new EndTurnEvent());
-        EventManager.Instance.Raise(new ToggleCombatMenuEvent(false));
     }
 }
