@@ -65,7 +65,7 @@ public class TurnManager : MonoBehaviour
     private IEnumerator EvilScheming()
     {
         //Debug.Log("evil scheming...");
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(2);
         ChangeTurn();
     }
 }

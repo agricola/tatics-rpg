@@ -18,6 +18,11 @@ public class InputManager : MonoBehaviour
         EventManager.Instance.AddListener<SetInputStateEvent>(OnInputStateChange);
     }
 
+    private void OnApplicationQuit()
+    {
+        Debug.Log("quit successfully!");
+    }
+
     private void OnDestroy()
     {
         if (state != null) state.Exit();
@@ -29,6 +34,7 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
+        //if (state == null) state = new NoSelectionState();
         state.HandleInput();
     }
 
@@ -63,17 +69,15 @@ public class InputManager : MonoBehaviour
         EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(inputEnabled));
         //Debug.Log(state);
     }
-    /*
-    private void FinishSelected()
-    {
-        selected.Acted = true;
-        lockSelected = false;
-        selected = null;
-    }*/
 
     public void PressWaitButton()
     {
         //Debug.Log("wait");
+        if (state is SelectionState)
+        {
+            SelectionState s = state as SelectionState;
+            s.Selected.Acted = true;
+        }
         ChangeState(new NoSelectionState());
         //Debug.Log("wait 2");
     }

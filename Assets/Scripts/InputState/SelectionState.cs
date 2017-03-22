@@ -5,7 +5,14 @@ public class SelectionState : IInputState
 {
     private Character selected;
     private ICharacterState characterState;
-    private bool exitable = false;
+
+    public Character Selected
+    {
+        get
+        {
+            return selected;
+        }
+    }
 
     public SelectionState()
     {
@@ -19,22 +26,20 @@ public class SelectionState : IInputState
 
     public void Enter(Character selected = null, Map map = null)
     {
-        //Debug.Log("sel enter");
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(true, true, true));
         if (this.selected == null)
         {
             this.selected = selected;
             this.selected.ToggleHighlight(true);
-            characterState = this.selected.Moved ? new ActionState() as ICharacterState : new MoveState();
-            characterState.Enter(selected);
+            ICharacterState state = (selected.Moved || selected.Acted) ? new ActionState() : new MoveState() as ICharacterState;
+            TransitionCharacterState(state);
         }
     }
 
     public void Exit()
     {
-        //Debug.Log("sel exit");
+        SetCombatMenu();
         if (characterState != null) characterState.Exit();
-        if (selected) selected.ToggleHighlight(false);
+        selected.ToggleHighlight(false);
     }
 
     public void OnCharacterSelect(CharacterSelectEvent e)
@@ -52,12 +57,6 @@ public class SelectionState : IInputState
             return;
         }
         characterState.OnTileSelect(e);
-    }
-
-    private void FinishSelected()
-    {
-        selected.Acted = true;
-        TransitionToNoSelection();
     }
 
     private void SelectCharacter(Character c)
@@ -97,15 +96,22 @@ public class SelectionState : IInputState
     {
         if (characterState is MoveState && !e.walk && e.walker == selected.gameObject)
         {
-            TransitionToActionState();
+            TransitionCharacterState(new ActionState());
             //Debug.Log("woop");
         }
     }
 
-    private void TransitionToActionState()
+    private void TransitionCharacterState(ICharacterState state)
     {
-        characterState.Exit();
-        characterState = new ActionState();
-        characterState.Enter();
+        if (characterState != null) characterState.Exit();
+        characterState = state;
+        characterState.Enter(selected);
+        SetCombatMenu();
+    }
+
+    private void SetCombatMenu()
+    {
+        EventManager.Instance.Raise<CombatMenuEvent>(
+            new ToggleCombatButtonsEvent(!selected.Acted, !selected.Acted, true));
     }
 }

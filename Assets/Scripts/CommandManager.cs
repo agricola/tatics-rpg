@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ public class CommandManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        ResetPath();
         EventManager.Instance.RemoveListener<PathfindEvent>(OnPathfindEvent);
         EventManager.Instance.RemoveListener<MoveCharacterEvent>(OnMoveEvent);
     }
@@ -69,14 +71,21 @@ public class CommandManager : MonoBehaviour
 
     private void ResetPath(bool noHighlight = false)
     {
-        HighlightType h = noHighlight ? HighlightType.None : HighlightType.Old;
-        if (oldPath.Count <= 0) return;
-        foreach (var tile in oldPath)
+        try
         {
-            tile.Highlight(h);
+            HighlightType h = noHighlight ? HighlightType.None : HighlightType.Old;
+            if (oldPath.Count <= 0) return;
+            foreach (var tile in oldPath)
+            {
+                tile.Highlight(h);
+            }
+            oldPath = new List<Tile>();
+            path = null;
         }
-        oldPath = new List<Tile>();
-        path = null;
+        catch
+        {
+            Debug.Log("failed to reset path");
+        }
     }
 
     private void HighlightTiles()
