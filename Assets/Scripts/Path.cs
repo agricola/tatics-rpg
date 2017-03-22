@@ -20,10 +20,9 @@ public class Path
     public bool Advance()
     {
         bool nextTileExists = false;
-        LinkedListNode<Tile> next = Current.Next;
-        if (next != null)
+        if (Current.Next != null)
         {
-            Current = next;
+            Current = Current.Next;
             nextTileExists = true;
         }
         return nextTileExists;

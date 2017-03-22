@@ -4,46 +4,53 @@ using UnityEngine;
 public class SelectionState : IInputState
 {
     private Character selected;
-    private IInputState characterState;
+    private ICharacterState characterState;
     private bool exitable = false;
+
+    public SelectionState()
+    {
+        EventManager.Instance.AddListener<ToggleWalkEvent>(OnWalk);
+    }
+
+    ~SelectionState()
+    {
+        EventManager.Instance.RemoveListener<ToggleWalkEvent>(OnWalk);
+    }
 
     public void Enter(Character selected = null, Map map = null)
     {
+        //Debug.Log("sel enter");
         EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(true, true, true));
-        SelectCharacter(selected);
-        characterState = new MoveState();
-        characterState.Enter(selected);
+        if (this.selected == null)
+        {
+            this.selected = selected;
+            this.selected.ToggleHighlight(true);
+            characterState = this.selected.Moved ? new ActionState() as ICharacterState : new MoveState();
+            characterState.Enter(selected);
+        }
     }
 
     public void Exit()
     {
-        Debug.Log("exit");
+        //Debug.Log("sel exit");
         if (characterState != null) characterState.Exit();
         if (selected) selected.ToggleHighlight(false);
     }
 
     public void OnCharacterSelect(CharacterSelectEvent e)
     {
+        if (!e.isGood) return;
         characterState.OnCharacterSelect(e);
-        if (e.character != selected)
-        {
-            SelectCharacter(e.character);
-        }
-        else
-        {
-            TransitionToNoSelection();
-        }
-    }
-
-    public void OnInputToggle(InputToggleEvent e)
-    {
-        characterState.OnInputToggle(e);
-        NoInputState s = new NoInputState();
-        EventManager.Instance.Raise(new SetInputStateEvent(s));
+        SelectCharacter(e.character);
     }
 
     public void OnTileSelect(TileSelectEvent e)
     {
+        if (e.selectType == TileSelectType.Cancel)
+        {
+            TransitionToNoSelection();
+            return;
+        }
         characterState.OnTileSelect(e);
     }
 
@@ -55,9 +62,15 @@ public class SelectionState : IInputState
 
     private void SelectCharacter(Character c)
     {
-        if (selected) selected.ToggleHighlight(false);
-        selected = c;
-        c.ToggleHighlight(true);
+        if (selected == c)
+        {
+            TransitionToNoSelection();
+        }
+        else
+        {
+            SelectionState s = new SelectionState();
+            EventManager.Instance.Raise(new SetInputStateEvent(s, c));
+        }
     }
 
     private void TransitionToNoSelection()
@@ -67,7 +80,7 @@ public class SelectionState : IInputState
     }
 
     public void HandleInput()
-    {
+    {/*
         if (!exitable)
         {
             exitable = true;
@@ -77,6 +90,22 @@ public class SelectionState : IInputState
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             TransitionToNoSelection();
+        }*/
+    }
+
+    private void OnWalk(ToggleWalkEvent e)
+    {
+        if (characterState is MoveState && !e.walk && e.walker == selected.gameObject)
+        {
+            TransitionToActionState();
+            //Debug.Log("woop");
         }
+    }
+
+    private void TransitionToActionState()
+    {
+        characterState.Exit();
+        characterState = new ActionState();
+        characterState.Enter();
     }
 }

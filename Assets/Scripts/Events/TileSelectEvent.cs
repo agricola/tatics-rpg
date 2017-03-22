@@ -1,4 +1,4 @@
-﻿public enum TileSelectType { None, Highlight, Move }
+﻿public enum TileSelectType { None, Highlight, Move, Cancel }
 
 public class TileSelectEvent : GameEvent
 {

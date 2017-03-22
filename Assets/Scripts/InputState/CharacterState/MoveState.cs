@@ -1,10 +1,12 @@
 ﻿using System;
+using UnityEngine;
 
-public class MoveState : IInputState
+public class MoveState : ICharacterState
 {
     Character selected;
     public void Enter(Character selected = null, Map map = null)
     {
+        //Debug.Log("move enter");
         this.selected = selected;
         EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(selected));
     }
@@ -24,38 +26,32 @@ public class MoveState : IInputState
         return;
     }
 
-    public void OnInputToggle(InputToggleEvent e)
-    {
-        return;
-    }
-
     public void OnTileSelect(TileSelectEvent e)
     {
+        //Debug.Log("move tile sel 0");
         if (selected.Moved) return;
         if (e.selectType == TileSelectType.Highlight)
         {
+            //Debug.Log("move tile sel 1");
             IssuePathfindCommand(e.tile);
         }
         else if (e.selectType == TileSelectType.Move)
         {
+            //Debug.Log("move tile sel 2");
             IssueMoveCommand(e.tile);
         }
+        //Debug.Log("move tile sel 3");
     }
 
     private void EndPathfinding()
     {
         EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
-        EventManager.Instance.Raise(new UnhighlightTilesEvent());
     }
 
     private void IssueMoveCommand(Tile tile)
     {
-        //if (!inputEnabled) return;
-        EventManager.Instance.Raise(new MoveCharacterEvent(selected));
-        selected.ToggleHighlight(false);
         selected.Moved = true;
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(true, true, true));
-        EndPathfinding();
+        EventManager.Instance.Raise(new MoveCharacterEvent(selected));
     }
 
     private void IssuePathfindCommand(Tile goal)

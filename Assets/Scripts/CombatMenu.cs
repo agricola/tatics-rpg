@@ -31,6 +31,7 @@ public class CombatMenu : MonoBehaviour
 
     private void OnMenuToggle(CombatMenuEvent e)
     {
+        //Debug.Log("menu toggle");
         if (e is ToggleCombatMenuEvent)
         {
             ToggleCombatMenuEvent ev = e as ToggleCombatMenuEvent;
@@ -43,6 +44,7 @@ public class CombatMenu : MonoBehaviour
             ToggleButton(ev.waitOn, ButtonType.Wait);
             ToggleButton(ev.endOn, ButtonType.End);
         }
+        //Debug.Log("menu toggle finish");
     }
 
     private void ToggleMenu(bool menuOn)

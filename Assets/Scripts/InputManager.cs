@@ -4,26 +4,8 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    [SerializeField]
-    private Character selected;
-    [SerializeField]
     private bool inputEnabled = true;
-    [SerializeField]
-    private bool lockSelected = false;
-    [SerializeField]
     private IInputState state;
-
-    public Character Selected
-    {
-        get
-        {
-            return selected;
-        }
-        set
-        {
-            selected = value;
-        }
-    }
 
 	private void Awake()
 	{
@@ -38,6 +20,7 @@ public class InputManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (state != null) state.Exit();
         EventManager.Instance.RemoveListener<TileSelectEvent>(OnTileSelect);
         EventManager.Instance.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
         EventManager.Instance.RemoveListener<InputToggleEvent>(OnInputToggle);
@@ -56,34 +39,29 @@ public class InputManager : MonoBehaviour
 
     private void ChangeState(IInputState state, Character enterObj = null)
     {
-        this.state.Exit();
+        if (this.state != null ) this.state.Exit();
         this.state = state;
         this.state.Enter(enterObj);
     }
 
     private void OnTileSelect(TileSelectEvent e)
     {
-        //if (!inputEnabled) return;
+        if (!inputEnabled) return;
         state.OnTileSelect(e);
     }
 
     private void OnCharacterSelect(CharacterSelectEvent e)
     {
-        if (e.character.Moved) return;
+        if (!inputEnabled) return;
         state.OnCharacterSelect(e);
     }
 
     private void OnInputToggle(InputToggleEvent e)
     {
-        //inputEnabled = e.inputEnabled;
-        if (e.inputEnabled)
-        {
-            ChangeState(new NoSelectionState());
-        }
-        else
-        {
-            ChangeState(new NoInputState());
-        }
+        //Debug.Log("toogle");
+        inputEnabled = e.inputEnabled;
+        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(inputEnabled));
+        //Debug.Log(state);
     }
     /*
     private void FinishSelected()
@@ -95,12 +73,15 @@ public class InputManager : MonoBehaviour
 
     public void PressWaitButton()
     {
+        //Debug.Log("wait");
         ChangeState(new NoSelectionState());
+        //Debug.Log("wait 2");
     }
 
     public void PressEndButton()
     {
         //ChangeState(new NoInputState());
+        ChangeState(new NoSelectionState());
         EventManager.Instance.Raise(new EndTurnEvent());
     }
 }

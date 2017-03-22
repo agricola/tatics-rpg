@@ -95,8 +95,8 @@ public class Map : MonoBehaviour
         GenerateTiles();
         
     }
-	
-	private void Update()
+
+    private void Update()
     {
 		
 	}

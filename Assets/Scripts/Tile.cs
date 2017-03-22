@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public enum HighlightType { None, Old, Targeting, Radius }
 
@@ -101,12 +102,28 @@ public class Tile : MonoBehaviour
         RaiseTileEvent(TileSelectType.Highlight);
     }
 
+    private void OnMouseDown()
+    {
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+        RaiseTileEvent(TileSelectType.Cancel);
+    }
+
+    private void OnMouseExit()
+    {
+        //EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
+    }
+
     private void OnMouseOver()
     {
         if (Input.GetMouseButtonDown(1))
         {
             RaiseTileEvent(TileSelectType.Move);
         }
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
     }
 
     private void RaiseTileEvent(TileSelectType selectType)

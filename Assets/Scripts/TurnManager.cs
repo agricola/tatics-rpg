@@ -49,7 +49,7 @@ public class TurnManager : MonoBehaviour
             good.ResetAllActions();
             turnNumber++;
             current = good;
-            Debug.Log("good turn");
+            //Debug.Log("good turn");
         }
         else
         {
@@ -57,15 +57,15 @@ public class TurnManager : MonoBehaviour
             EventManager.Instance.Raise(new InputToggleEvent(false));
             bad.ResetAllActions();
             current = bad;
-            Debug.Log("bad turn");
+            //Debug.Log("bad turn");
             StartCoroutine(EvilScheming());
         }
     }
 
     private IEnumerator EvilScheming()
     {
-        Debug.Log("evil scheming...");
+        //Debug.Log("evil scheming...");
         yield return new WaitForSeconds(5);
-        EventManager.Instance.Raise(new EndTurnEvent());
+        ChangeTurn();
     }
 }

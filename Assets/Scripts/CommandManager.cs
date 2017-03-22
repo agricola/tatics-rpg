@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class CommandManager : MonoBehaviour
 {
-    [SerializeField]
     private GameObject map;
-    [SerializeField]
-    private GameObject pathfindingManager;
+    private Pathfinder pathfinder;
 
     private Path path;
     private List<Tile> oldPath = new List<Tile>();
     private int limit;
+    private bool findingPath = false;
 
     private void Awake()
     {
@@ -27,7 +26,7 @@ public class CommandManager : MonoBehaviour
 
     private void Start()
 	{
-        pathfindingManager = GameObject.Find("PathfindingManager");
+        pathfinder = GameObject.Find("PathfindingManager").GetComponent<Pathfinder>();
     }
 	
 	private void Update()
@@ -39,25 +38,33 @@ public class CommandManager : MonoBehaviour
     {
         if (e is PathfindCreateEvent)
         {
+            if (findingPath) return;
+            findingPath = true;
             PathfindCreateEvent ev = e as PathfindCreateEvent;
             limit = ev.limit;
             FindPath(ev.source, ev.goal);
+            findingPath = false;
         }
         else if (e is CancelPathfindEvent)
         {
-            ResetPath(true);
+            CancelPathfind();
         }
+    }
+
+    private void CancelPathfind()
+    {
+        ResetPath();
+        EventManager.Instance.Raise(new UnhighlightTilesEvent());
     }
 
     private void FindPath(Tile source, Tile goal)
     {
-        Pathfinder p = pathfindingManager.GetComponent<Pathfinder>();
         MapPosition sPos = source.MapPosition;
         MapPosition gPos = goal.MapPosition;
 
         ResetPath();
-        path = p.GetPath(map.GetComponent<Map>(), sPos.X, sPos.Y, gPos.X, gPos.Y, limit);
-        HighlightTiles(false);
+        path = pathfinder.GetPath(GameManager.Map, sPos.X, sPos.Y, gPos.X, gPos.Y, limit);
+        HighlightTiles();
     }
 
     private void ResetPath(bool noHighlight = false)
@@ -72,7 +79,7 @@ public class CommandManager : MonoBehaviour
         path = null;
     }
 
-    private void HighlightTiles(bool highlight)
+    private void HighlightTiles()
     {
         if (path != null)
         {

@@ -54,11 +54,6 @@ public class Pathfinder : MonoBehaviour
         return cameFrom;
     }
 
-    public Path GetPath(Map map, float x, float y, float goalX, float goalY, int limit)
-    {
-        return GetPath(map, (int)x, (int)y, (int)goalX, (int)goalY, limit);
-    }
-
     public Path GetPath(Map map, int x, int y, int goalX, int goalY, int limit)
     {
         this.map = map;

@@ -71,10 +71,14 @@ public class Character : MonoBehaviour
         EventManager.Instance.Raise(new CharacterChangeEvent(this, true));
     }
 
+    private void OnDeath()
+    {
+        EventManager.Instance.Raise(new CharacterChangeEvent(this, false));
+    }
+
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
-        EventManager.Instance.Raise(new CharacterChangeEvent(this, false));
     }
 
     private void OnMouseDown()

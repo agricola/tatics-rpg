@@ -1,14 +1,18 @@
 ﻿using System;
-using UnityEngine;
 
-public class NoInputState : IInputState
+public class ActionState : ICharacterState
 {
     public void Enter(Character selected = null, Map map = null)
+    {
+        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(true, true, true));
+    }
+
+    public void Exit()
     {
         return;
     }
 
-    public void Exit()
+    public void HandleInput()
     {
         return;
     }
@@ -18,17 +22,7 @@ public class NoInputState : IInputState
         return;
     }
 
-    public void OnInputToggle(InputToggleEvent e)
-    {
-        return;
-    }
-
     public void OnTileSelect(TileSelectEvent e)
-    {
-        return;
-    }
-
-    public void HandleInput()
     {
         return;
     }
