@@ -5,6 +5,8 @@ using UnityEngine;
 public class AnimationManager : MonoBehaviour
 {
     private Animator animator;
+    private readonly string WalkTrigger = "ToggleWalk";
+    private readonly string FightTrigger = "ToggleFight";
 
 	private void Start()
 	{
@@ -21,7 +23,7 @@ public class AnimationManager : MonoBehaviour
     {
         if (e.walker == gameObject)
         {
-            animator.SetTrigger("ToggleWalk");
+            animator.SetTrigger(FightTrigger);
         }
     }
 

@@ -45,7 +45,6 @@ public class Character : MonoBehaviour
         }
         set
         {
-            if (!value) GetComponent<SpriteRenderer>().color = Color.red;
             isGood = value;
         }
     }

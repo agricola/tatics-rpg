@@ -316,8 +316,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c2069e4e609e23418b365ef3e4ea585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map: {fileID: 0}
-  pathfindingManager: {fileID: 0}
 --- !u!4 &477723206
 Transform:
   m_ObjectHideFlags: 0
@@ -655,9 +653,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bacd2ad9320ff44798bd321afc4dce4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selected: {fileID: 0}
-  inputEnabled: 1
-  lockSelected: 0
 --- !u!4 &860988042
 Transform:
   m_ObjectHideFlags: 0

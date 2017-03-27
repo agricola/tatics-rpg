@@ -133,6 +133,9 @@ MonoBehaviour:
   isHighlighted: 0
   highlightGameObject: {fileID: 1724312734418328}
   movementLimit: 5
+  mapPosition:
+    x: 0
+    y: 0
 --- !u!212 &212028489439900038
 SpriteRenderer:
   m_ObjectHideFlags: 1

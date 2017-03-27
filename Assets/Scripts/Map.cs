@@ -135,6 +135,7 @@ public class Map : MonoBehaviour
         {
             Character c = SpawnCharacter();
             c.IsGood = isGood;
+            if (!isGood) c.GetComponent<SpriteRenderer>().color = Color.blue;
             members.Add(c);
         }
         return new BattleGroup(members, isGood);
