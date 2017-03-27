@@ -16,7 +16,20 @@ public class Character : MonoBehaviour
     private GameObject highlightGameObject;
     [SerializeField]
     private int movementLimit = 5;
+    [SerializeField]
+    private MapPosition mapPosition;
 
+    public MapPosition MapPosition
+    {
+        get
+        {
+            return mapPosition;
+        }
+        set
+        {
+            mapPosition = value;
+        }
+    }
     public int MovementLimit
     {
         get

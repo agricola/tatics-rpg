@@ -78,14 +78,32 @@ public class InputManager : MonoBehaviour
             SelectionState s = state as SelectionState;
             s.Selected.Acted = true;
         }
-        ChangeState(new NoSelectionState());
+        TransitionToNoSelectionState();
         //Debug.Log("wait 2");
     }
 
     public void PressEndButton()
     {
         //ChangeState(new NoInputState());
-        ChangeState(new NoSelectionState());
+        TransitionToNoSelectionState();
         EventManager.Instance.Raise(new EndTurnEvent());
+    }
+
+    public void PressFightButton()
+    {
+        //Debug.Log("wait");
+        if (state is SelectionState)
+        {
+            SelectionState s = state as SelectionState;
+            s.TransitionToFightState();
+        }
+        // add fight finish listener
+        TransitionToNoSelectionState();
+        //Debug.Log("wait 2");
+    }
+
+    private void TransitionToNoSelectionState()
+    {
+        ChangeState(new NoSelectionState());
     }
 }

@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class MoveState : ICharacterState
 {
-    Character selected;
+    private Character selected;
+
     public void Enter(Character selected = null, Map map = null)
     {
         //Debug.Log("move enter");

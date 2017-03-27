@@ -144,7 +144,8 @@ public class Tile : MonoBehaviour
         }
         obj.transform.position = pos;
         occupant = obj;
-
+        Character c = occupant.GetComponent<Character>();
+        if (c) c.MapPosition = mapPosition;
         EventManager.Instance.Raise(new TileChangeEvent(obj));
         EventManager.Instance.AddListener<TileChangeEvent>(OnTileChange);
         return true;

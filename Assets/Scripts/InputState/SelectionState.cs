@@ -109,6 +109,11 @@ public class SelectionState : IInputState
         SetCombatMenu();
     }
 
+    public void TransitionToFightState()
+    {
+        TransitionCharacterState(new FightState());
+    }
+
     private void SetCombatMenu()
     {
         EventManager.Instance.Raise<CombatMenuEvent>(

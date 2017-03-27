@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class MapPosition
 {
+    [SerializeField]
     private int x, y;
     public int X { get { return x; } }
     public int Y { get { return y; } }
