@@ -16,12 +16,12 @@ public class SelectionState : IInputState
 
     public SelectionState()
     {
-        EventManager.Instance.AddListener<ToggleWalkEvent>(OnWalk);
+        EventManager.Instance.AddListener<AnimationEvent>(OnAnim);
     }
 
     ~SelectionState()
     {
-        EventManager.Instance.RemoveListener<ToggleWalkEvent>(OnWalk);
+        EventManager.Instance.RemoveListener<AnimationEvent>(OnAnim);
     }
 
     public void Enter(Character selected = null, Map map = null)
@@ -93,12 +93,18 @@ public class SelectionState : IInputState
         }*/
     }
 
-    private void OnWalk(ToggleWalkEvent e)
+    private void OnAnim(AnimationEvent e)
     {
-        if (characterState is MoveState && !e.walk && e.walker == selected.gameObject)
+        if (characterState is MoveState && !e.Act && e.Actor == selected.gameObject)
         {
-            TransitionCharacterState(new ActionState());
-            //Debug.Log("woop");
+            if (e is ToggleWalkEvent)
+            {
+                TransitionCharacterState(new ActionState());
+            }
+            else if (e is ToggleFightEvent)
+            {
+                TransitionToNoSelection();
+            }
         }
     }
 

@@ -132,7 +132,7 @@ MonoBehaviour:
   isGood: 1
   isHighlighted: 0
   highlightGameObject: {fileID: 1724312734418328}
-  movementLimit: 5
+  movementLimit: 10
   mapPosition:
     x: 0
     y: 0

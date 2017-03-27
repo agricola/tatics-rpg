@@ -71,6 +71,33 @@ public class Map : MonoBehaviour
         return neighbors;
     }
 
+    public List<Tile> GetNeighborsIncBlocked(MapPosition pos)
+    {
+        return GetNeighborsIncBlocked(pos.X, pos.Y);
+    }
+
+    public List<Tile> GetNeighborsIncBlocked(int x, int y)
+    {
+        List<Tile> neighbors = new List<Tile>();
+        if (IsWithinBounds(x - 1, y))
+        {
+            neighbors.Add(Tiles[x - 1, y]);
+        }
+        if (IsWithinBounds(x + 1, y))
+        {
+            neighbors.Add(Tiles[x + 1, y]);
+        }
+        if (IsWithinBounds(x, y - 1))
+        {
+            neighbors.Add(Tiles[x, y - 1]);
+        }
+        if (IsWithinBounds(x, y + 1) )
+        {
+            neighbors.Add(Tiles[x, y + 1]);
+        }
+        return neighbors;
+    }
+
     public Vector2 MapPosition(float x, float y)
     {
         int newX = (int)(x - transform.position.x);
@@ -145,6 +172,7 @@ public class Map : MonoBehaviour
     {
         Tile placedTile = RandomTile();
         GameObject p = PlaceObject(0, 0, -.2f, baseCharacter.gameObject);
+        p.name = "Character " + Random.Range(100, 999); 
         //p.transform.rotation = Quaternion.Euler(-15, 0, 0);
         while (!placedTile.MoveObjectTo(p))
         {
@@ -169,4 +197,5 @@ public class Map : MonoBehaviour
         int rngY = (int)(Random.value * height);
         return tiles[rngX, rngY].GetComponent<Tile>();
     }
+
 }

@@ -11,17 +11,37 @@ public class AnimationManager : MonoBehaviour
 	private void Start()
 	{
         animator = GetComponent<Animator>();
-        EventManager.Instance.AddListener<ToggleWalkEvent>(OnWalkToggle);
+        EventManager.Instance.AddListener<AnimationEvent>(OnAnimationEvent);
 	}
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<ToggleWalkEvent>(OnWalkToggle);
+        EventManager.Instance.RemoveListener<AnimationEvent>(OnAnimationEvent);
+    }
+
+    private void OnAnimationEvent(AnimationEvent e)
+    {
+        if (e is ToggleFightEvent)
+        {
+            OnFightToggle(e as ToggleFightEvent);
+        }
+        else if (e is ToggleWalkEvent)
+        {
+            OnWalkToggle(e as ToggleWalkEvent);
+        }
     }
 
     private void OnWalkToggle(ToggleWalkEvent e)
     {
-        if (e.walker == gameObject)
+        if (e.Actor == gameObject)
+        {
+            animator.SetTrigger(WalkTrigger);
+        }
+    }
+
+    private void OnFightToggle(ToggleFightEvent e)
+    {
+        if (e.Actor == gameObject)
         {
             animator.SetTrigger(FightTrigger);
         }

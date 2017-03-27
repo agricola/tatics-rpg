@@ -19,6 +19,8 @@ public class Character : MonoBehaviour
     [SerializeField]
     private MapPosition mapPosition;
 
+    private Collider2D collider;
+
     public MapPosition MapPosition
     {
         get
@@ -76,16 +78,19 @@ public class Character : MonoBehaviour
         if (!highlightGameObject) highlightGameObject = transform.GetChild(0).gameObject;
         highlightGameObject.SetActive(false);
         EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
+        collider = GetComponent<Collider2D>();
     }
 
     private void Start()
     {
         EventManager.Instance.Raise(new CharacterChangeEvent(this, true));
+        EventManager.Instance.AddListener<ColliderToggleEvent>(OnColliderToggle);
     }
 
     private void OnDeath()
     {
         EventManager.Instance.Raise(new CharacterChangeEvent(this, false));
+        EventManager.Instance.RemoveListener<ColliderToggleEvent>(OnColliderToggle);
     }
 
     private void OnDestroy()
@@ -101,6 +106,11 @@ public class Character : MonoBehaviour
     private void OnCharacterSelect(CharacterSelectEvent e)
     {
         //if (e.character != this) ToggleHighlight(false);
+    }
+
+    private void OnColliderToggle(ColliderToggleEvent e)
+    {
+        collider.enabled = e.Enabled;
     }
 
     public void ToggleHighlight()

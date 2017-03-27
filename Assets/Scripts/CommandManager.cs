@@ -17,6 +17,7 @@ public class CommandManager : MonoBehaviour
     {
         EventManager.Instance.AddListener<PathfindEvent>(OnPathfindEvent);
         EventManager.Instance.AddListener<MoveCharacterEvent>(OnMoveEvent);
+        EventManager.Instance.AddListener<FightEvent>(OnFight);
     }
 
     private void OnDestroy()
@@ -24,6 +25,7 @@ public class CommandManager : MonoBehaviour
         ResetPath();
         EventManager.Instance.RemoveListener<PathfindEvent>(OnPathfindEvent);
         EventManager.Instance.RemoveListener<MoveCharacterEvent>(OnMoveEvent);
+        EventManager.Instance.RemoveListener<FightEvent>(OnFight);
     }
 
     private void Start()
@@ -51,6 +53,11 @@ public class CommandManager : MonoBehaviour
         {
             CancelPathfind();
         }
+    }
+
+    private void OnFight(FightEvent e)
+    {
+        Debug.Log(e.Attacker + " fights " + e.Defender);
     }
 
     private void CancelPathfind()
@@ -108,7 +115,7 @@ public class CommandManager : MonoBehaviour
         LinkedList<Tile> movement = path.Tiles;
         ResetPath(true);
         EventManager.Instance.Raise(new InputToggleEvent(false));
-        EventManager.Instance.Raise(new ToggleWalkEvent(true, e.character.gameObject));
+        EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(true, e.character.gameObject));
         StartCoroutine(MoveCharacter(movement, e.character));
     }
 
@@ -123,6 +130,6 @@ public class CommandManager : MonoBehaviour
             }
         }
         EventManager.Instance.Raise(new InputToggleEvent(true));
-        EventManager.Instance.Raise(new ToggleWalkEvent(false, c.gameObject));
+        EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(false, c.gameObject));
     }
 }

@@ -91,14 +91,13 @@ public class InputManager : MonoBehaviour
 
     public void PressFightButton()
     {
-        //Debug.Log("wait");
         if (state is SelectionState)
         {
             SelectionState s = state as SelectionState;
             s.TransitionToFightState();
         }
         // add fight finish listener
-        TransitionToNoSelectionState();
+        //TransitionToNoSelectionState();
         //Debug.Log("wait 2");
     }
 

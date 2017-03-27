@@ -10,6 +10,7 @@ public class MoveState : ICharacterState
         //Debug.Log("move enter");
         this.selected = selected;
         EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(selected));
+        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(false));
     }
 
     public void Exit()
