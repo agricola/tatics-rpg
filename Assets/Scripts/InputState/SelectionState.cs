@@ -26,6 +26,7 @@ public class SelectionState : IInputState
 
     public void Enter(Character selected = null, Map map = null)
     {
+        EventManager.Instance.Raise< CombatMenuEvent>(new ToggleCombatMenuEvent(false));
         if (this.selected == null)
         {
             this.selected = selected;
