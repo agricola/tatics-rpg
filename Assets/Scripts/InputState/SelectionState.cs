@@ -32,7 +32,11 @@ public class SelectionState : IInputState
         SetCombatMenu();
         if (characterState != null) characterState.Exit();
         if (selected) selected.ToggleHighlight(false);
-        EventManager.Instance.RemoveListener<AnimationEvent>(OnAnim);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.RemoveListener<AnimationEvent>(OnAnim);
+        }
     }
 
     public void OnCharacterSelect(CharacterSelectEvent e)

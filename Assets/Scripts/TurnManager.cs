@@ -18,8 +18,12 @@ public class TurnManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<EndTurnEvent>(OnEndTurn);
-        EventManager.Instance.RemoveListener<SetBattleGroupsEvent>(OnSetBattleGroups);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.RemoveListener<EndTurnEvent>(OnEndTurn);
+            em.RemoveListener<SetBattleGroupsEvent>(OnSetBattleGroups);
+        }
     }
 
     public void Initialize(BattleGroup good, BattleGroup bad)

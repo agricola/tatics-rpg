@@ -131,7 +131,11 @@ public class Tile : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (modified) EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            if (modified) EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
+        }
     }
 
     private void RaiseTileEvent(TileSelectType selectType)

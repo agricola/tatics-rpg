@@ -17,8 +17,12 @@ public class RadiusManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<RadiusEvent>(OnRadiusEvent);
-        EventManager.Instance.RemoveListener<MoveCharacterEvent>(OnCharacterMove);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.RemoveListener<RadiusEvent>(OnRadiusEvent);
+            em.RemoveListener<MoveCharacterEvent>(OnCharacterMove);
+        }
     }
 
     private void OnCharacterMove(MoveCharacterEvent e)

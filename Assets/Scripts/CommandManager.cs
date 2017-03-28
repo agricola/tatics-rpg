@@ -53,6 +53,20 @@ public class CommandManager : MonoBehaviour
     private void OnFight(FightEvent e)
     {
         Debug.Log(e.Attacker + " fights " + e.Defender);
+
+        MapPosition ap = e.Attacker.MapPosition;
+        MapPosition dp = e.Defender.MapPosition;
+        float xDiff = dp.X - ap.X;
+        float yDiff = dp.Y - ap.Y;
+        float x = xDiff == 0 ? 0 : xDiff / 5;
+        float y = yDiff == 0 ? 0 : yDiff / 5;
+        Debug.Log(x + ", " + y);
+        Vector2 direction = new Vector2(x, y);
+        int dmg = e.Attacker.Damage;
+        e.Attacker.GetComponent<AnimationManager>().TriggerFightAnimation(
+            direction,
+            e.Defender.gameObject,
+            dmg);
     }
 
     private void CancelPathfind()

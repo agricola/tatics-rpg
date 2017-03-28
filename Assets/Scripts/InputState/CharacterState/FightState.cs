@@ -76,7 +76,6 @@ public class FightState : ICharacterState
     {
         attacker.Acted = true;
         EventManager.Instance.Raise(new FightEvent(attacker, defender));
-        EventManager.Instance.Raise<AnimationEvent>(new ToggleFightEvent(true, selected.gameObject));
         EventManager.Instance.Raise(new SetInputStateEvent(new NoSelectionState(), selected));
     }
 

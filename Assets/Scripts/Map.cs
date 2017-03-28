@@ -15,7 +15,7 @@ public class Map : MonoBehaviour
     [SerializeField]
     private Tile[,] tiles = new Tile[0,0];
     [SerializeField]
-    private Character baseCharacter;
+    private GameObject baseCharacter;
 
     public int Width
     {
@@ -162,7 +162,7 @@ public class Map : MonoBehaviour
         {
             Character c = SpawnCharacter();
             c.IsGood = isGood;
-            if (!isGood) c.GetComponent<SpriteRenderer>().color = Color.blue;
+            if (!isGood) c.GetComponent<SpriteRenderer>().color = Color.yellow;
             members.Add(c);
         }
         return new BattleGroup(members, isGood);
@@ -171,7 +171,7 @@ public class Map : MonoBehaviour
     private Character SpawnCharacter()
     {
         Tile placedTile = RandomTile();
-        GameObject p = PlaceObject(0, 0, -.2f, baseCharacter.gameObject);
+        GameObject p = PlaceObject(0, 0, -.2f, baseCharacter);
         p.name = "Character " + Random.Range(100, 999); 
         //p.transform.rotation = Quaternion.Euler(-15, 0, 0);
         while (!placedTile.MoveObjectTo(p))

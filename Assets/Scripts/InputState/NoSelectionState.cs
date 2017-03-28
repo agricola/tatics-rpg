@@ -20,8 +20,12 @@ public class NoSelectionState : IInputState
     {
         //Debug.Log("no sel -> sel");
         if (!e.isGood) return;
-        SetInputStateEvent ev = new SetInputStateEvent(new SelectionState(), e.character);
-        EventManager.Instance.Raise(ev);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            SetInputStateEvent ev = new SetInputStateEvent(new SelectionState(), e.character);
+            em.Raise(ev);
+        }
     }
 
     public void OnTileSelect(TileSelectEvent e)

@@ -18,9 +18,18 @@ public class Character : MonoBehaviour
     private int movementLimit = 5;
     [SerializeField]
     private MapPosition mapPosition;
+    [SerializeField]
+    private int damage = 5;
 
-    private Collider2D collider;
+    private Collider2D coll;
 
+    public int Damage
+    {
+        get
+        {
+            return damage;
+        }
+    }
     public MapPosition MapPosition
     {
         get
@@ -78,7 +87,7 @@ public class Character : MonoBehaviour
         if (!highlightGameObject) highlightGameObject = transform.GetChild(0).gameObject;
         highlightGameObject.SetActive(false);
         
-        collider = GetComponent<Collider2D>();
+        coll = GetComponent<Collider2D>();
     }
 
     private void Start()
@@ -88,15 +97,15 @@ public class Character : MonoBehaviour
         EventManager.Instance.AddListener<ColliderToggleEvent>(OnColliderToggle);
     }
 
-    private void OnDeath()
-    {
-        EventManager.Instance.Raise(new CharacterChangeEvent(this, false));
-        EventManager.Instance.RemoveListener<ColliderToggleEvent>(OnColliderToggle);
-    }
-
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.Raise(new CharacterChangeEvent(this, false));
+            em.RemoveListener<ColliderToggleEvent>(OnColliderToggle);
+            em.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
+        }
     }
 
     private void OnMouseDown()
@@ -111,7 +120,7 @@ public class Character : MonoBehaviour
 
     private void OnColliderToggle(ColliderToggleEvent e)
     {
-        collider.enabled = e.Enabled;
+        coll.enabled = e.Enabled;
     }
 
     public void ToggleHighlight()

@@ -5,9 +5,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
-    static Map map;
+    private static Map map;
     [SerializeField]
-    static List<Character> characters = new List<Character>();
+    private static List<Character> characters = new List<Character>();
 
     public static Map Map
     {
@@ -32,8 +32,12 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<MapChangeEvent>(OnMapChange);
-        EventManager.Instance.RemoveListener<CharacterChangeEvent>(OnCharacterChange);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            EventManager.Instance.RemoveListener<MapChangeEvent>(OnMapChange);
+            EventManager.Instance.RemoveListener<CharacterChangeEvent>(OnCharacterChange);
+        }
     }
 
     private void OnMapChange(MapChangeEvent e)
