@@ -29,7 +29,11 @@ public class AnimationManager : MonoBehaviour
 
     private void OnTakeDamageEvent(TakeDamageEvent e)
     {
-        if (e.Defender == gameObject) TriggerReceiveHitAnimation(e.Direction);
+        if (e.Defender == gameObject)
+        {
+            TriggerReceiveHitAnimation(e.Direction);
+            EventManager.Instance.Raise(new InputToggleEvent(true));
+        }
     }
 
     private void OnAnimationEvent(AnimationEvent e)

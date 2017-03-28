@@ -32,7 +32,6 @@ public class RadiusManager : MonoBehaviour
 
     private void OnRadiusEvent(RadiusEvent e)
     {
-        //Debug.Log("radius event start");
         if (e is CreateRadiusEvent)
         {
             OnCreateRadius(e as CreateRadiusEvent);
@@ -40,7 +39,6 @@ public class RadiusManager : MonoBehaviour
         {
             OnDestroyRadius(e as DestroyRadiusEvent);
         }
-        //Debug.Log("radius event end");
     }
 
     private void OnDestroyRadius(DestroyRadiusEvent e)

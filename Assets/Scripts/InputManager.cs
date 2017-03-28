@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class InputManager : MonoBehaviour
 {
@@ -35,7 +36,13 @@ public class InputManager : MonoBehaviour
     private void Update()
     {
         //if (state == null) state = new NoSelectionState();
+        if (!inputEnabled) return;
         state.HandleInput();
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (EventSystem.current.IsPointerOverGameObject()) return;
+            EventManager.Instance.Raise(new OptionsMenuEvent(true));
+        }
     }
 
     private void OnInputStateChange(SetInputStateEvent e)
@@ -64,28 +71,25 @@ public class InputManager : MonoBehaviour
 
     private void OnInputToggle(InputToggleEvent e)
     {
-        //Debug.Log("toogle");
         inputEnabled = e.inputEnabled;
         EventManager.Instance.Raise(new CombatMenuEvent());
-        //Debug.Log(state);
     }
 
     public void PressWaitButton()
     {
-        //Debug.Log("wait");
         if (state is SelectionState)
         {
             SelectionState s = state as SelectionState;
             s.Selected.Acted = true;
         }
         TransitionToNoSelectionState();
-        //Debug.Log("wait 2");
     }
 
     public void PressEndButton()
     {
         //ChangeState(new NoInputState());
         TransitionToNoSelectionState();
+        EventManager.Instance.Raise(new OptionsMenuEvent(true));
         EventManager.Instance.Raise(new EndTurnEvent());
     }
 
@@ -98,7 +102,6 @@ public class InputManager : MonoBehaviour
         }
         // add fight finish listener
         //TransitionToNoSelectionState();
-        //Debug.Log("wait 2");
     }
 
     private void TransitionToNoSelectionState()

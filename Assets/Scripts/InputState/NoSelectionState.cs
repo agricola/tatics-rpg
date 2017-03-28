@@ -5,19 +5,16 @@ public class NoSelectionState : IInputState
 {
     public void Enter(Character selected = null, Map map = null)
     {
-        //Debug.Log("no sel enter");
         EventManager.Instance.Raise(new CombatMenuEvent());
     }
 
     public void Exit()
     {
-        //Debug.Log("no sel exit");
         return;
     }
 
     public void OnCharacterSelect(CharacterSelectEvent e)
     {
-        //Debug.Log("no sel -> sel");
         if (!e.isGood) return;
         EventManager em = EventManager.Instance;
         if (em)
@@ -34,6 +31,9 @@ public class NoSelectionState : IInputState
 
     public void HandleInput()
     {
-        return;
+        if (Input.GetMouseButtonDown(1))
+        {
+            EventManager.Instance.Raise(new OptionsMenuEvent());
+        }
     }
 }

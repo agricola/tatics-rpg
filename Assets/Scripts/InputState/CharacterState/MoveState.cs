@@ -7,7 +7,6 @@ public class MoveState : ICharacterState
 
     public void Enter(Character selected = null, Map map = null)
     {
-        //Debug.Log("move enter");
         this.selected = selected;
         EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(selected));
         EventManager.Instance.Raise(new CombatMenuEvent());
@@ -30,32 +29,25 @@ public class MoveState : ICharacterState
 
     public void OnTileSelect(TileSelectEvent e)
     {
-        //Debug.Log("move tile sel 0");
         if (selected.Moved) return;
         if (e.selectType == TileSelectType.Highlight)
         {
-            //Debug.Log("move tile sel 1");
             IssuePathfindCommand(e.tile);
         }
         else if (e.selectType == TileSelectType.Move)
         {
-            //Debug.Log("move tile sel 2");
             IssueMoveCommand(e.tile);
         }
-        //Debug.Log("move tile sel 3");
     }
 
     private void EndPathfinding()
     {
-        Debug.Log("end pathfinding");
         EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
     }
 
     private void IssueMoveCommand(Tile tile)
     {
-        //selected.Moved = true;
         bool skip = tile.Occupant == selected.gameObject ? true : false;
-        Debug.Log(skip);
         EventManager.Instance.Raise(new MoveCharacterEvent(selected, skip));
     }
 

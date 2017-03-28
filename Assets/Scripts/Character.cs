@@ -110,7 +110,7 @@ public class Character : MonoBehaviour
 
     private void OnMouseDown()
     { 
-        EventManager.Instance.Raise(new CharacterSelectEvent(isGood, this));
+        if (!Acted || !Moved) EventManager.Instance.Raise(new CharacterSelectEvent(isGood, this));
     }
 
     private void OnCharacterSelect(CharacterSelectEvent e)

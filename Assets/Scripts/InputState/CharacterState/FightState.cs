@@ -74,6 +74,7 @@ public class FightState : ICharacterState
 
     private void InitiateFight(Character attacker, Character defender)
     {
+        EventManager.Instance.Raise(new InputToggleEvent(false));
         attacker.Acted = true;
         EventManager.Instance.Raise(new FightEvent(attacker, defender));
         EventManager.Instance.Raise(new SetInputStateEvent(new NoSelectionState(), selected));
