@@ -7,7 +7,7 @@ public class InputManager : MonoBehaviour
     private bool inputEnabled = true;
     private IInputState state;
 
-	private void Awake()
+	private void Start()
 	{
         if (state != null) state.Exit();
         state = new NoSelectionState();
@@ -25,7 +25,7 @@ public class InputManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (state != null) state.Exit();
+        //if (state != null) state.Exit();
         EventManager.Instance.RemoveListener<TileSelectEvent>(OnTileSelect);
         EventManager.Instance.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
         EventManager.Instance.RemoveListener<InputToggleEvent>(OnInputToggle);

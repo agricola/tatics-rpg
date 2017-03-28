@@ -23,6 +23,7 @@ public class Tile : MonoBehaviour
     private MapPosition mapPosition;
     [SerializeField]
     private GameObject occupant;
+    private bool modified = false;
 
     public bool Blocked
     {
@@ -82,18 +83,25 @@ public class Tile : MonoBehaviour
             default:
                 break;
         }
+        if (!GetComponent<Renderer>()) return;
         Color possibleOldColor = GetComponent<Renderer>().material.color;
         if (possibleOldColor != targetingColor) oldColor = possibleOldColor;
         if (color != neutralColor)
         {
             EventManager.Instance.AddListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
+            modified = true;
+        }
+        else if (modified)
+        {
+            EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
+            modified = false;
         }
         GetComponent<Renderer>().material.color = color;
     }
 
     private void OnUnhighlightTilesEvent(UnhighlightTilesEvent e)
     {
-        EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
+        //EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
         Highlight(HighlightType.None);
     }
 
@@ -123,7 +131,7 @@ public class Tile : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
+        if (modified) EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
     }
 
     private void RaiseTileEvent(TileSelectType selectType)

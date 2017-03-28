@@ -77,12 +77,13 @@ public class Character : MonoBehaviour
     {
         if (!highlightGameObject) highlightGameObject = transform.GetChild(0).gameObject;
         highlightGameObject.SetActive(false);
-        EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
+        
         collider = GetComponent<Collider2D>();
     }
 
     private void Start()
     {
+        EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
         EventManager.Instance.Raise(new CharacterChangeEvent(this, true));
         EventManager.Instance.AddListener<ColliderToggleEvent>(OnColliderToggle);
     }

@@ -9,7 +9,7 @@ public class RadiusManager : MonoBehaviour
     private Tile currentCenter;
     
 
-    private void Awake()
+    private void Start()
     {
         EventManager.Instance.AddListener<RadiusEvent>(OnRadiusEvent);
         EventManager.Instance.AddListener<MoveCharacterEvent>(OnCharacterMove);

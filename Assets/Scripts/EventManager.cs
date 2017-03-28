@@ -4,19 +4,27 @@ using UnityEngine;
 
 public class GameEvent { }
 
-// Event manager class taken from https://gist.github.com/stfx/3786466
-public class EventManager
+// class based on this https://gist.github.com/stfx/3786466
+public class EventManager : MonoBehaviour
 {
     static EventManager instance;
     public static EventManager Instance
     {
         get
         {
-            if (instance == null)
-            {
-                instance = new EventManager();
-            }
             return instance;
+        }
+    }
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 

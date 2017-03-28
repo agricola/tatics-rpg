@@ -12,17 +12,9 @@ public class CommandManager : MonoBehaviour
     private List<Tile> oldPath = new List<Tile>();
     private int limit;
     private bool findingPath = false;
-
-    private void Awake()
-    {
-        EventManager.Instance.AddListener<PathfindEvent>(OnPathfindEvent);
-        EventManager.Instance.AddListener<MoveCharacterEvent>(OnMoveEvent);
-        EventManager.Instance.AddListener<FightEvent>(OnFight);
-    }
-
     private void OnDestroy()
     {
-        ResetPath();
+        //ResetPath();
         EventManager.Instance.RemoveListener<PathfindEvent>(OnPathfindEvent);
         EventManager.Instance.RemoveListener<MoveCharacterEvent>(OnMoveEvent);
         EventManager.Instance.RemoveListener<FightEvent>(OnFight);
@@ -31,6 +23,9 @@ public class CommandManager : MonoBehaviour
     private void Start()
 	{
         pathfinder = GameObject.Find("PathfindingManager").GetComponent<Pathfinder>();
+        EventManager.Instance.AddListener<PathfindEvent>(OnPathfindEvent);
+        EventManager.Instance.AddListener<MoveCharacterEvent>(OnMoveEvent);
+        EventManager.Instance.AddListener<FightEvent>(OnFight);
     }
 	
 	private void Update()
@@ -63,7 +58,6 @@ public class CommandManager : MonoBehaviour
     private void CancelPathfind()
     {
         ResetPath();
-        EventManager.Instance.Raise(new UnhighlightTilesEvent());
     }
 
     private void FindPath(Tile source, Tile goal)
@@ -71,28 +65,27 @@ public class CommandManager : MonoBehaviour
         MapPosition sPos = source.MapPosition;
         MapPosition gPos = goal.MapPosition;
 
-        ResetPath();
+        ResetOldPath();
         path = pathfinder.GetPath(GameManager.Map, sPos.X, sPos.Y, gPos.X, gPos.Y, limit);
         HighlightTiles();
     }
-
-    private void ResetPath(bool noHighlight = false)
+    
+    private void ResetOldPath()
     {
-        try
+        if (oldPath.Count <= 0) return;
+        foreach (var tile in oldPath)
         {
-            HighlightType h = noHighlight ? HighlightType.None : HighlightType.Old;
-            if (oldPath.Count <= 0) return;
-            foreach (var tile in oldPath)
-            {
-                tile.Highlight(h);
-            }
-            oldPath = new List<Tile>();
-            path = null;
+            if (tile) tile.Highlight(HighlightType.Old);
         }
-        catch
-        {
-            Debug.Log("failed to reset path");
-        }
+        oldPath = new List<Tile>();
+        path = null;
+    }
+
+    private void ResetPath()
+    {
+        oldPath = new List<Tile>();
+        path = null;
+        EventManager.Instance.Raise(new UnhighlightTilesEvent());
     }
 
     private void HighlightTiles()
@@ -107,13 +100,14 @@ public class CommandManager : MonoBehaviour
                 path.Current.Value.GetComponent<Tile>().Highlight(HighlightType.Targeting);
                 oldPath.Add(path.Current.Value.GetComponent<Tile>());
             }
+            //Debug.Log("exit");
         }
     }
 
     private void OnMoveEvent(MoveCharacterEvent e)
     {
         LinkedList<Tile> movement = path.Tiles;
-        ResetPath(true);
+        ResetPath();
         EventManager.Instance.Raise(new InputToggleEvent(false));
         EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(true, e.character.gameObject));
         StartCoroutine(MoveCharacter(movement, e.character));

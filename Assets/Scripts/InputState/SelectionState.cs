@@ -14,16 +14,6 @@ public class SelectionState : IInputState
         }
     }
 
-    public SelectionState()
-    {
-        EventManager.Instance.AddListener<AnimationEvent>(OnAnim);
-    }
-
-    ~SelectionState()
-    {
-        EventManager.Instance.RemoveListener<AnimationEvent>(OnAnim);
-    }
-
     public void Enter(Character selected = null, Map map = null)
     {
         EventManager.Instance.Raise< CombatMenuEvent>(new ToggleCombatMenuEvent(false));
@@ -34,13 +24,15 @@ public class SelectionState : IInputState
             ICharacterState state = (selected.Moved || selected.Acted) ? new ActionState() : new MoveState() as ICharacterState;
             TransitionCharacterState(state);
         }
+        EventManager.Instance.AddListener<AnimationEvent>(OnAnim);
     }
 
     public void Exit()
     {
         SetCombatMenu();
         if (characterState != null) characterState.Exit();
-        selected.ToggleHighlight(false);
+        if (selected) selected.ToggleHighlight(false);
+        EventManager.Instance.RemoveListener<AnimationEvent>(OnAnim);
     }
 
     public void OnCharacterSelect(CharacterSelectEvent e)
@@ -95,7 +87,7 @@ public class SelectionState : IInputState
 
     private void OnAnim(AnimationEvent e)
     {
-        if (characterState is MoveState && !e.Act && e.Actor == selected.gameObject)
+        if ((characterState is MoveState || characterState is FightState) && !e.Act && e.Actor == selected.gameObject)
         {
             if (e is ToggleWalkEvent)
             {

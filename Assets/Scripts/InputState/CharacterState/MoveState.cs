@@ -47,6 +47,7 @@ public class MoveState : ICharacterState
 
     private void EndPathfinding()
     {
+        Debug.Log("end pathfinding");
         EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
     }
 
