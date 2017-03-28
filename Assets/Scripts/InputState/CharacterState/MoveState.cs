@@ -10,7 +10,7 @@ public class MoveState : ICharacterState
         //Debug.Log("move enter");
         this.selected = selected;
         EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(selected));
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(false));
+        EventManager.Instance.Raise(new CombatMenuEvent());
     }
 
     public void Exit()
@@ -53,8 +53,10 @@ public class MoveState : ICharacterState
 
     private void IssueMoveCommand(Tile tile)
     {
-        selected.Moved = true;
-        EventManager.Instance.Raise(new MoveCharacterEvent(selected));
+        //selected.Moved = true;
+        bool skip = tile.Occupant == selected.gameObject ? true : false;
+        Debug.Log(skip);
+        EventManager.Instance.Raise(new MoveCharacterEvent(selected, skip));
     }
 
     private void IssuePathfindCommand(Tile goal)

@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class MoveCharacterEvent : GameEvent
 {
-    public Character character;
-    public MoveCharacterEvent(Character character)
+    public Character Character { get; private set; }
+    public bool Skip { get; private set; }
+    public MoveCharacterEvent(Character character, bool skip)
     {
-        this.character = character;
+        Character = character;
+        Skip = skip;
     }
 }

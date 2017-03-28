@@ -12,8 +12,6 @@ public class CombatMenu : MonoBehaviour
     private GameObject fightButton;
     [SerializeField]
     private GameObject waitButton;
-    [SerializeField]
-    private GameObject endButton;
 
     private void Start()
 	{
@@ -31,19 +29,9 @@ public class CombatMenu : MonoBehaviour
 
     private void OnMenuToggle(CombatMenuEvent e)
     {
-        //Debug.Log("menu toggle");
-        if (e is ToggleCombatMenuEvent)
-        {
-            ToggleCombatMenuEvent ev = e as ToggleCombatMenuEvent;
-            ToggleMenu(ev.menuOn);
-        }
-        else if (e is ToggleCombatButtonsEvent)
-        {
-            ToggleCombatButtonsEvent ev = e as ToggleCombatButtonsEvent;
-            ToggleButton(ev.fightOn, ButtonType.Fight);
-            ToggleButton(ev.waitOn, ButtonType.Wait);
-            ToggleButton(ev.endOn, ButtonType.End);
-        }
+        ToggleButton(e.fightOn, ButtonType.Fight);
+        ToggleButton(e.waitOn, ButtonType.Wait);
+        ToggleMenu(e.fightOn || e.waitOn);
         //Debug.Log("menu toggle finish");
     }
 
@@ -63,9 +51,6 @@ public class CombatMenu : MonoBehaviour
                 break;
             case ButtonType.Wait:
                 waitButton.SetActive(buttonOn);
-                break;
-            case ButtonType.End:
-                endButton.SetActive(buttonOn);
                 break;
             default:
                 break;

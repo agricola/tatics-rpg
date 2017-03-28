@@ -1,10 +1,12 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class SelectionState : IInputState
 {
     private Character selected;
     private ICharacterState characterState;
+    private bool exitable = false;
 
     public Character Selected
     {
@@ -16,7 +18,7 @@ public class SelectionState : IInputState
 
     public void Enter(Character selected = null, Map map = null)
     {
-        EventManager.Instance.Raise< CombatMenuEvent>(new ToggleCombatMenuEvent(false));
+        EventManager.Instance.Raise(new CombatMenuEvent());
         if (this.selected == null)
         {
             this.selected = selected;
@@ -25,6 +27,13 @@ public class SelectionState : IInputState
             TransitionCharacterState(state);
         }
         EventManager.Instance.AddListener<AnimationEvent>(OnAnim);
+        EventManager.Instance.AddListener<CharacterStateTransitionEvent>(OnCharStateTransition);
+        EventManager.Instance.Raise(new ColliderToggleEvent(false));
+    }
+
+    private void OnCharStateTransition(CharacterStateTransitionEvent e)
+    {
+        TransitionCharacterState(e.CharacterState);
     }
 
     public void Exit()
@@ -36,7 +45,9 @@ public class SelectionState : IInputState
         if (em)
         {
             em.RemoveListener<AnimationEvent>(OnAnim);
+            em.RemoveListener<CharacterStateTransitionEvent>(OnCharStateTransition);
         }
+        EventManager.Instance.Raise(new ColliderToggleEvent(true));
     }
 
     public void OnCharacterSelect(CharacterSelectEvent e)
@@ -47,12 +58,12 @@ public class SelectionState : IInputState
     }
 
     public void OnTileSelect(TileSelectEvent e)
-    {
+    {/*
         if (e.selectType == TileSelectType.Cancel)
         {
             TransitionToNoSelection();
             return;
-        }
+        }*/
         characterState.OnTileSelect(e);
     }
 
@@ -76,28 +87,26 @@ public class SelectionState : IInputState
     }
 
     public void HandleInput()
-    {/*
+    {
         if (!exitable)
         {
             exitable = true;
             return;
         }
-        characterState.HandleInput();
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (!exitable) return;
+        if (Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current.IsPointerOverGameObject()) return;
             TransitionToNoSelection();
-        }*/
+        }
+        characterState.HandleInput();
     }
 
     private void OnAnim(AnimationEvent e)
     {
-        if ((characterState is MoveState || characterState is FightState) && !e.Act && e.Actor == selected.gameObject)
+        if ((characterState is FightState) && !e.Act && e.Actor == selected.gameObject)
         {
-            if (e is ToggleWalkEvent)
-            {
-                TransitionCharacterState(new ActionState());
-            }
-            else if (e is ToggleFightEvent)
+            if (e is ToggleFightEvent)
             {
                 TransitionToNoSelection();
             }
@@ -109,7 +118,7 @@ public class SelectionState : IInputState
         if (characterState != null) characterState.Exit();
         characterState = state;
         characterState.Enter(selected);
-        SetCombatMenu();
+        //SetCombatMenu();
     }
 
     public void TransitionToFightState()
@@ -119,7 +128,6 @@ public class SelectionState : IInputState
 
     private void SetCombatMenu()
     {
-        EventManager.Instance.Raise<CombatMenuEvent>(
-            new ToggleCombatButtonsEvent(!selected.Acted, !selected.Acted, true));
+        EventManager.Instance.Raise(new CombatMenuEvent(!selected.Acted, !selected.Acted));
     }
 }

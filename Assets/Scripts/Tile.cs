@@ -111,9 +111,9 @@ public class Tile : MonoBehaviour
     }
 
     private void OnMouseDown()
-    {
+    {/*
         if (EventSystem.current.IsPointerOverGameObject()) return;
-        RaiseTileEvent(TileSelectType.Cancel);
+        RaiseTileEvent(TileSelectType.Cancel);*/
     }
 
     private void OnMouseExit()

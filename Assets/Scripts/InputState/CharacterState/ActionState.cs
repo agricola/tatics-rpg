@@ -4,8 +4,8 @@ public class ActionState : ICharacterState
 {
     public void Enter(Character selected = null, Map map = null)
     {
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(true));
-        //EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(true, true, true));
+        EventManager.Instance.Raise(new CombatMenuEvent(!selected.Acted, !selected.Acted));
+        //EventManager.Instance.Raise(new CombatMenuEvent(true, true, true));
     }
 
     public void Exit()

@@ -81,6 +81,8 @@ public class CommandManager : MonoBehaviour
 
         ResetOldPath();
         path = pathfinder.GetPath(GameManager.Map, sPos.X, sPos.Y, gPos.X, gPos.Y, limit);
+        if (path == null) return;
+        if (!path.Tiles.Contains(goal)) path = null;
         HighlightTiles();
     }
     
@@ -120,11 +122,26 @@ public class CommandManager : MonoBehaviour
 
     private void OnMoveEvent(MoveCharacterEvent e)
     {
-        LinkedList<Tile> movement = path.Tiles;
-        ResetPath();
-        EventManager.Instance.Raise(new InputToggleEvent(false));
-        EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(true, e.character.gameObject));
-        StartCoroutine(MoveCharacter(movement, e.character));
+        
+        if (!e.Skip)
+        {
+            if (path == null)
+            {
+                return;
+            }
+            LinkedList<Tile> movement = path.Tiles;
+            Debug.Log(movement.Last.Value.MapPosition);
+            ResetPath();
+            EventManager.Instance.Raise(new InputToggleEvent(false));
+            EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(true, e.Character.gameObject));
+            StartCoroutine(MoveCharacter(movement, e.Character));
+        }
+        else
+        {
+            EventManager.Instance.Raise(new CharacterStateTransitionEvent(new ActionState()));
+        }
+        Debug.Log("MOVE");
+        e.Character.Moved = true;
     }
 
     private IEnumerator MoveCharacter(LinkedList<Tile> tiles, Character c)
@@ -139,5 +156,6 @@ public class CommandManager : MonoBehaviour
         }
         EventManager.Instance.Raise(new InputToggleEvent(true));
         EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(false, c.gameObject));
+        EventManager.Instance.Raise(new CharacterStateTransitionEvent(new ActionState()));
     }
 }

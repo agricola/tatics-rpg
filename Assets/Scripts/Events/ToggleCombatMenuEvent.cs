@@ -1,5 +1,5 @@
-﻿public class CombatMenuEvent : GameEvent { }
-
+﻿// public class CombatMenuEvent : GameEvent { }
+/*
 public class ToggleCombatMenuEvent : CombatMenuEvent
 {
     public bool menuOn;
@@ -7,21 +7,16 @@ public class ToggleCombatMenuEvent : CombatMenuEvent
     {
         this.menuOn = menuOn;
     }
-}
+}*/
 
-public class ToggleCombatButtonsEvent : CombatMenuEvent
+public class CombatMenuEvent : GameEvent
 {
     public bool fightOn;
     public bool waitOn;
-    public bool endOn;
-    private bool v1;
-    private bool v2;
-    private bool v3;
 
-    public ToggleCombatButtonsEvent(bool fightOn, bool waitOn, bool endOn)
+    public CombatMenuEvent(bool fightOn = false, bool waitOn = false)
     {
         this.fightOn = fightOn;
         this.waitOn = waitOn;
-        this.endOn = endOn;
     }
 }

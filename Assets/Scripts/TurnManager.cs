@@ -45,10 +45,9 @@ public class TurnManager : MonoBehaviour
 
     private void ChangeTurn()
     {
+        EventManager.Instance.Raise(new CombatMenuEvent());
         if (current == bad)
         {
-            EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(true));
-            EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(false, false, true));
             EventManager.Instance.Raise(new InputToggleEvent(true));
             good.ResetAllActions();
             turnNumber++;
@@ -57,7 +56,6 @@ public class TurnManager : MonoBehaviour
         }
         else
         {
-            EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(false));
             EventManager.Instance.Raise(new InputToggleEvent(false));
             bad.ResetAllActions();
             current = bad;

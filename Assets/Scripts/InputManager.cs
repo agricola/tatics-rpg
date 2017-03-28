@@ -66,7 +66,7 @@ public class InputManager : MonoBehaviour
     {
         //Debug.Log("toogle");
         inputEnabled = e.inputEnabled;
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(inputEnabled));
+        EventManager.Instance.Raise(new CombatMenuEvent());
         //Debug.Log(state);
     }
 

@@ -14,17 +14,17 @@ public class FightState : ICharacterState
         Map m = GameManager.Map;
         neighbors = m.GetNeighborsIncBlocked(selected.MapPosition);
         HighlightNeighbors(neighbors, HighlightType.Radius, HighlightEvilTile);
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(false));
-        EventManager.Instance.Raise(new ColliderToggleEvent(false));
+        EventManager.Instance.Raise(new CombatMenuEvent());
+        
         //InitiateFight(selected, selected);
-        // EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(false, true, true));
+        // EventManager.Instance.Raise(new CombatMenuEvent(false, true, true));
     }
 
     public void Exit()
     {
         // send out end fight event
         HighlightNeighbors(neighbors, HighlightType.None, HighlightTile);
-        EventManager.Instance.Raise(new ColliderToggleEvent(true));
+       
         return;
     }
 

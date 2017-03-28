@@ -12,7 +12,7 @@ public class RadiusManager : MonoBehaviour
     private void Start()
     {
         EventManager.Instance.AddListener<RadiusEvent>(OnRadiusEvent);
-        EventManager.Instance.AddListener<MoveCharacterEvent>(OnCharacterMove);
+        EventManager.Instance.AddListener<CharacterStateTransitionEvent>(OnCharacterMove);
     }
 
     private void OnDestroy()
@@ -21,11 +21,11 @@ public class RadiusManager : MonoBehaviour
         if (em)
         {
             em.RemoveListener<RadiusEvent>(OnRadiusEvent);
-            em.RemoveListener<MoveCharacterEvent>(OnCharacterMove);
+            em.RemoveListener<CharacterStateTransitionEvent>(OnCharacterMove);
         }
     }
 
-    private void OnCharacterMove(MoveCharacterEvent e)
+    private void OnCharacterMove(CharacterStateTransitionEvent e)
     {
         EventManager.Instance.Raise(new UnhighlightTilesEvent());
     }

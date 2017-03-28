@@ -6,8 +6,7 @@ public class NoSelectionState : IInputState
     public void Enter(Character selected = null, Map map = null)
     {
         //Debug.Log("no sel enter");
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatMenuEvent(true));
-        EventManager.Instance.Raise<CombatMenuEvent>(new ToggleCombatButtonsEvent(false, false, true));
+        EventManager.Instance.Raise(new CombatMenuEvent());
     }
 
     public void Exit()
