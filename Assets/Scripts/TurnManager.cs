@@ -80,7 +80,7 @@ public class TurnManager : MonoBehaviour
     {
         Map map = GameManager.Instance.Map;
         Debug.Log("good memers : " + good.Members.Count);
-        AIManager.Instance.DetermineStrategies(good.Members, bad.Members, map);
+        //AIManager.Instance.DetermineStrategies(good.Members, bad.Members, map);
         actingBaddies = bad.Members;
         ActivateNextBaddieTurn();
     }
@@ -114,11 +114,12 @@ public class TurnManager : MonoBehaviour
 
     private void ActivateNextBaddieTurn()
     {
-        Debug.Log("act");
+        Map map = GameManager.Instance.Map;
         Character actor = actingBaddies[0];
-        Path path = actor.GetComponent<EnemyAI>().WalkPath;
+        EnemyAI ai = actor.GetComponent<EnemyAI>();
+        ai.DetermineStrategy(good.Members, map);
+        Path path = ai.WalkPath;
         bool skip = path == null;
-        Debug.Log("path == null " + skip);
         if (skip)
         {
             actingBaddies.RemoveAt(0);
