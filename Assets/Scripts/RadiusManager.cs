@@ -50,7 +50,7 @@ public class RadiusManager : MonoBehaviour
 
     private void OnCreateRadius(CreateRadiusEvent e)
     {
-        Map map = GameManager.Map;
+        Map map = GameManager.Instance.Map;
         MapPosition centerPosition =
             MapPosition.VectorToMapPosition(e.character.gameObject.transform.localPosition);
         Tile centerTile = map.TileAtMapPosition(centerPosition);

@@ -7,6 +7,27 @@ public class Pathfinder : MonoBehaviour
 {
     private Map map;
 
+    static Pathfinder instance;
+    public static Pathfinder Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     public Dictionary<Tile, Tile> TravelDic(float x, float y, float goalX, float goalY)
     {
         return TravelDic((int)x, (int)y, (int)goalX, (int)goalY);

@@ -138,7 +138,7 @@ public class Map : MonoBehaviour
             {
                 float x = i + transform.position.x;
                 float y = j + transform.position.y;
-                Tile template = Random.value > .7 ? templateBlockedTile : templateTile;
+                Tile template = Random.value > .8 ? templateBlockedTile : templateTile;
                 //template.MapPosition = new MapPosition(i, j);
                 GameObject tile = PlaceTile(x, y, template);
                 tile.GetComponent<Tile>().MapPosition = new MapPosition(i, j);
@@ -162,7 +162,11 @@ public class Map : MonoBehaviour
         {
             Character c = SpawnCharacter();
             c.IsGood = isGood;
-            if (!isGood) c.GetComponent<SpriteRenderer>().color = Color.yellow;
+            if (!isGood)
+            {
+                c.GetComponent<SpriteRenderer>().color = Color.yellow;
+                c.gameObject.AddComponent<EnemyAI>();
+            }
             members.Add(c);
         }
         return new BattleGroup(members, isGood);

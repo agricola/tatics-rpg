@@ -56,6 +56,10 @@ public class Tile : MonoBehaviour
         {
             return occupant;
         }
+        set
+        {
+            occupant = value;
+        }
     }
     /*
     public Tile(int x, int y)
@@ -165,7 +169,7 @@ public class Tile : MonoBehaviour
 
     public bool isWalkable()
     {
-        return !blocked && occupant == null;
+        return !blocked && !occupant;
     }
 
     private void OnTileChange(TileChangeEvent e)

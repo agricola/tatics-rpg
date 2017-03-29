@@ -5,18 +5,27 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
-    private static Map map;
+    private Map map;
     [SerializeField]
-    private static List<Character> characters = new List<Character>();
+    private List<Character> characters = new List<Character>();
 
-    public static Map Map
+    static GameManager instance;
+    public static GameManager Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
+    public Map Map
     {
         get
         {
             return map;
         }
     }
-    public static List<Character> Characters
+    public List<Character> Characters
     {
         get
         {
@@ -26,6 +35,14 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         EventManager.Instance.AddListener<MapChangeEvent>(OnMapChange);
         EventManager.Instance.AddListener<CharacterChangeEvent>(OnCharacterChange);
     }

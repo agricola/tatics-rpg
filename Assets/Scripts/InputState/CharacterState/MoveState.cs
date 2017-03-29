@@ -47,14 +47,15 @@ public class MoveState : ICharacterState
 
     private void IssueMoveCommand(Tile tile)
     {
-        bool skip = tile.Occupant == selected.gameObject ? true : false;
+        bool skip = tile.Occupant == selected.gameObject;
         EventManager.Instance.Raise(new MoveCharacterEvent(selected, skip));
+        if (!skip) EventManager.Instance.Raise(new InputToggleEvent(false));
     }
 
     private void IssuePathfindCommand(Tile goal)
     {
         //if (!selected || !inputEnabled) return;
-        Map map = GameManager.Map;
+        Map map = GameManager.Instance.Map;
         Tile source = map.Tiles[(int)selected.transform.localPosition.x,
             (int)selected.transform.localPosition.y];
         int limit = source.GetComponent<Tile>().Occupant.GetComponent<Character>().MovementLimit;

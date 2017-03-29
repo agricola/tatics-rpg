@@ -24,4 +24,12 @@ public class AIManager : MonoBehaviour {
             Destroy(gameObject);
         }
     }
+
+    public void DetermineStrategies(List<Character> good, List<Character> bad, Map map)
+    {
+        foreach (var enemy in bad)
+        {
+            enemy.GetComponent<EnemyAI>().DetermineStrategy(good,map);
+        }
+    }
 }

@@ -10,8 +10,29 @@ public class CommandManager : MonoBehaviour
 
     private Path path;
     private List<Tile> oldPath = new List<Tile>();
-    private int limit;
     private bool findingPath = false;
+
+    static CommandManager instance;
+    public static CommandManager Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void OnDestroy()
     {
         //ResetPath();
@@ -22,7 +43,7 @@ public class CommandManager : MonoBehaviour
 
     private void Start()
 	{
-        pathfinder = GameObject.Find("PathfindingManager").GetComponent<Pathfinder>();
+        pathfinder = Pathfinder.Instance;
         EventManager.Instance.AddListener<PathfindEvent>(OnPathfindEvent);
         EventManager.Instance.AddListener<MoveCharacterEvent>(OnMoveEvent);
         EventManager.Instance.AddListener<FightEvent>(OnFight);
@@ -30,7 +51,7 @@ public class CommandManager : MonoBehaviour
 	
 	private void Update()
 	{
-		if (!map) map = GameManager.Map.gameObject;
+		if (!map) map = GameManager.Instance.Map.gameObject;
     }
 
     private void OnPathfindEvent(PathfindEvent e)
@@ -40,8 +61,11 @@ public class CommandManager : MonoBehaviour
             if (findingPath) return;
             findingPath = true;
             PathfindCreateEvent ev = e as PathfindCreateEvent;
-            limit = ev.limit;
-            FindPath(ev.source, ev.goal);
+            int limit = ev.limit;
+            ResetOldPath();
+            Map map = GameManager.Instance.Map;
+            path = FindPath(ev.source, ev.goal, limit, map);
+            HighlightTiles();
             findingPath = false;
         }
         else if (e is CancelPathfindEvent)
@@ -71,16 +95,15 @@ public class CommandManager : MonoBehaviour
         ResetPath();
     }
 
-    private void FindPath(Tile source, Tile goal)
+    public Path FindPath(Tile source, Tile goal, int limit, Map map)
     {
         MapPosition sPos = source.MapPosition;
         MapPosition gPos = goal.MapPosition;
-
-        ResetOldPath();
-        path = pathfinder.GetPath(GameManager.Map, sPos.X, sPos.Y, gPos.X, gPos.Y, limit);
-        if (path == null) return;
+        Path path;
+        path = pathfinder.GetPath(map, sPos.X, sPos.Y, gPos.X, gPos.Y, limit);
+        if (path == null) return null;
         if (!path.Tiles.Contains(goal)) path = null;
-        HighlightTiles();
+        return path;
     }
     
     private void ResetOldPath()
@@ -118,7 +141,6 @@ public class CommandManager : MonoBehaviour
 
     private void OnMoveEvent(MoveCharacterEvent e)
     {
-        
         if (!e.Skip)
         {
             if (path == null)
@@ -126,19 +148,18 @@ public class CommandManager : MonoBehaviour
                 return;
             }
             LinkedList<Tile> movement = path.Tiles;
-            ResetPath();
-            EventManager.Instance.Raise(new InputToggleEvent(false));
+            if (e.Character.IsGood) ResetPath();
             EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(true, e.Character.gameObject));
             StartCoroutine(MoveCharacter(movement, e.Character));
         }
         else
         {
-            EventManager.Instance.Raise(new CharacterStateTransitionEvent(new ActionState()));
+            if (e.Character.IsGood) EventManager.Instance.Raise(new CharacterStateTransitionEvent(new ActionState()));
         }
         e.Character.Moved = true;
     }
 
-    private IEnumerator MoveCharacter(LinkedList<Tile> tiles, Character c)
+    public IEnumerator MoveCharacter(LinkedList<Tile> tiles, Character c)
     {
         foreach (var tile in tiles)
         {
@@ -148,8 +169,11 @@ public class CommandManager : MonoBehaviour
                 break;
             }
         }
-        EventManager.Instance.Raise(new InputToggleEvent(true));
+        if (c.IsGood)
+        {
+            EventManager.Instance.Raise(new InputToggleEvent(true));
+            EventManager.Instance.Raise(new CharacterStateTransitionEvent(new ActionState()));
+        }
         EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(false, c.gameObject));
-        EventManager.Instance.Raise(new CharacterStateTransitionEvent(new ActionState()));
     }
 }
