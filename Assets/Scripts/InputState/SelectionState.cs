@@ -108,6 +108,7 @@ public class SelectionState : IInputState
         {
             if (e is ToggleFightEvent)
             {
+                Debug.Log("toggle fight!");
                 TransitionToNoSelection();
             }
         }

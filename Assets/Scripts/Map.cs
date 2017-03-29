@@ -98,6 +98,13 @@ public class Map : MonoBehaviour
         return neighbors;
     }
 
+    public bool AreNeighbors(MapPosition p0, MapPosition p1)
+    {
+        List<Tile> neighbors = GetNeighborsIncBlocked(p0);
+        Tile second = TileAtMapPosition(p1);
+        return neighbors.Contains(second);
+    }
+
     public Vector2 MapPosition(float x, float y)
     {
         int newX = (int)(x - transform.position.x);

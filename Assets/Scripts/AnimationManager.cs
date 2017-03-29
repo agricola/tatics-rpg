@@ -32,7 +32,7 @@ public class AnimationManager : MonoBehaviour
         if (e.Defender == gameObject)
         {
             TriggerReceiveHitAnimation(e.Direction);
-            EventManager.Instance.Raise(new InputToggleEvent(true));
+            if (!e.Defender.GetComponent<Character>().IsGood) EventManager.Instance.Raise(new InputToggleEvent(true));
         }
     }
 
@@ -72,9 +72,9 @@ public class AnimationManager : MonoBehaviour
             scale.x *= -1;
             transform.localScale = scale;
         }
+        hitWithWeapon = (() => EventManager.Instance.Raise(new TakeDamageEvent(def, dmg, direction)));
         animator.SetTrigger(FightTrigger);
         //StartCoroutine(AttackMovementCoroutine(direction));
-        hitWithWeapon = (() => EventManager.Instance.Raise(new TakeDamageEvent(def, dmg, direction)));
     }
 
     public void TriggerReceiveHitAnimation(Vector2 direction)
@@ -120,5 +120,11 @@ public class AnimationManager : MonoBehaviour
     public void HitWithWeapon()
     {
         if (hitWithWeapon != null) hitWithWeapon();
+        hitWithWeapon = null;
+    }
+
+    public void FinishAttack()
+    {
+        EventManager.Instance.Raise(new FinishCombatEvent(GetComponent<Character>()));
     }
 }

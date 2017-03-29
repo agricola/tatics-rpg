@@ -6,26 +6,26 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     private Map map;
-    readonly int limit = 99;
+    private readonly int limit = 99; // temp, replace with movement limit in future
 
     public IEnemyStrategy EnemyStrategy { get; private set; }
     public Path WalkPath { get; private set; }
 
-    public void DetermineStrategy(List<Character> targets, Map map)
+    public Path DetermineMoveStrategy(List<Character> targets, Map map)
     {
         Character self = GetComponent<Character>();
         CommandManager commandManager = CommandManager.Instance;
         if (!self)
         {
             Debug.Log("Cannot find Character component for enemy");
-            return;
+            return null;
         }
         Queue<Character> closestTargets = ClosestTargets(targets, self);
         Func<Map, MapPosition, Path> findPath = GetPath(self.MapPosition, limit);
-        Path path = FindBestPath(map, closestTargets, findPath);
-        WalkPath = path;
+        return FindBestPath(map, closestTargets, findPath);
     }
 
+    // functional programming meme helper
     private Func<Map, MapPosition, Path> GetPath(MapPosition source, int limit)
     {
         Pathfinder pathfinder = Pathfinder.Instance;
@@ -34,28 +34,6 @@ public class EnemyAI : MonoBehaviour
             pathfinder.GetPath(map, source.X, source.Y, mapPos.X, mapPos.Y, limit);
         return findPath;
     }
-    /*
-    private Tile ClosestTile(MapPosition target, Map map, MapPosition self)
-    {
-        List<Tile> tiles = map.GetNeighbors(target);
-        if (tiles.Count <= 0) return null;
-        Tile closest = tiles[0];
-        int lowestDistance = DistanceBetween(self, closest.MapPosition;
-        tiles.RemoveAt(0);
-        if (tiles.Count > 0)
-        {
-            foreach (var tile in tiles)
-            {
-                int newDistance = DistanceBetween(self, tile.MapPosition);
-                if (newDistance < lowestDistance)
-                {
-                    lowestDistance = newDistance;
-                    closest = tile;
-                }
-            }
-        }
-        return closest;
-    }*/
 
     private Path FindBestPath(Map map, Queue<Character> closestTargets, Func<Map, MapPosition, Path> findPath)
     {
@@ -112,5 +90,22 @@ public class EnemyAI : MonoBehaviour
     {
         return Math.Abs(self.X - target.X)
         + Math.Abs(self.Y - target.Y);
+    }
+
+    public Character DetermineActionStrategy(List<Character> targets, Map map)
+    {
+        MapPosition selfPos = GetComponent<Character>().MapPosition;
+        List<Character> neighbors = new List<Character>();
+        foreach (Character target in targets)
+        {
+            if (map.AreNeighbors(selfPos, target.MapPosition)) neighbors.Add(target);
+        }
+        return ChooseTarget(neighbors);
+    }
+
+    // choose target when they are all neighbors
+    private Character ChooseTarget(List<Character> targets)
+    {
+        return targets[0];
     }
 }

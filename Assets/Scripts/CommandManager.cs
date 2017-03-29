@@ -76,17 +76,22 @@ public class CommandManager : MonoBehaviour
 
     private void OnFight(FightEvent e)
     {
-        MapPosition ap = e.Attacker.MapPosition;
-        MapPosition dp = e.Defender.MapPosition;
+        AttackCommand(e.Attacker, e.Defender);
+    }
+
+    public void AttackCommand(Character attacker, Character defender)
+    {
+        MapPosition ap = attacker.MapPosition;
+        MapPosition dp = defender.MapPosition;
         float xDiff = dp.X - ap.X;
         float yDiff = dp.Y - ap.Y;
         float x = xDiff == 0 ? 0 : xDiff / 5;
         float y = yDiff == 0 ? 0 : yDiff / 5;
         Vector2 direction = new Vector2(x, y);
-        int dmg = e.Attacker.Damage;
-        e.Attacker.GetComponent<AnimationManager>().TriggerFightAnimation(
+        int dmg = attacker.Damage;
+        attacker.GetComponent<AnimationManager>().TriggerFightAnimation(
             direction,
-            e.Defender.gameObject,
+            defender.gameObject,
             dmg);
     }
 

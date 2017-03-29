@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,14 +9,13 @@ public class TurnManager : MonoBehaviour
     private BattleGroup good;
     private BattleGroup bad;
     private BattleGroup current;
-    private List<Character> actingBaddies = new List<Character>();
 
 	private void Start()
 	{
         turnNumber = 0;
         EventManager.Instance.AddListener<EndTurnEvent>(OnEndTurn);
         EventManager.Instance.AddListener<SetBattleGroupsEvent>(OnSetBattleGroups);
-        EventManager.Instance.AddListener<AnimationEvent>(OnAnimationEvent);
+        EventManager.Instance.AddListener<ChangeTurnEvent>(OnChangeTurnEvent);
     }
 
     private void OnDestroy()
@@ -25,7 +25,7 @@ public class TurnManager : MonoBehaviour
         {
             em.RemoveListener<EndTurnEvent>(OnEndTurn);
             em.RemoveListener<SetBattleGroupsEvent>(OnSetBattleGroups);
-            em.RemoveListener<AnimationEvent>(OnAnimationEvent);
+            em.RemoveListener<ChangeTurnEvent>(OnChangeTurnEvent);
         }
     }
 
@@ -62,71 +62,16 @@ public class TurnManager : MonoBehaviour
             EventManager.Instance.Raise(new InputToggleEvent(false));
             bad.ResetAllActions();
             current = bad;
-            ExecuteEnemyTurns();
+            AIManager.Instance.ExecuteEnemyTurns(good, bad);
             //Debug.Log("bad turn");
             //StartCoroutine(EvilScheming());
         }
     }
 
-    private void OnAnimationEvent(AnimationEvent e)
+    private void OnChangeTurnEvent(ChangeTurnEvent e)
     {
-        if (e is ToggleWalkEvent)
-        {
-            OnWalkToggle(e as ToggleWalkEvent);
-        }
+        ChangeTurn();
     }
 
-    private void ExecuteEnemyTurns()
-    {
-        Map map = GameManager.Instance.Map;
-        Debug.Log("good memers : " + good.Members.Count);
-        //AIManager.Instance.DetermineStrategies(good.Members, bad.Members, map);
-        actingBaddies = bad.Members;
-        ActivateNextBaddieTurn();
-    }
 
-    private void OnWalkToggle(ToggleWalkEvent e)
-    {
-        if (actingBaddies.Count <= 0) return;
-        Debug.Log("toggle! " + !e.Act + " " + (e.Actor == actingBaddies[0].gameObject));
-        if (!e.Act && e.Actor == actingBaddies[0].gameObject)
-        {
-            actingBaddies.RemoveAt(0);
-            if (!BaddiesFinished())
-            {
-                Debug.Log("next baddie");
-                ActivateNextBaddieTurn();
-            }
-            
-        }
-    }
-
-    private bool BaddiesFinished()
-    {
-        bool finished = false;
-        if (actingBaddies.Count <= 0)
-        {
-            ChangeTurn();
-            finished = true;
-        }
-        return finished;
-    }
-
-    private void ActivateNextBaddieTurn()
-    {
-        Map map = GameManager.Instance.Map;
-        Character actor = actingBaddies[0];
-        EnemyAI ai = actor.GetComponent<EnemyAI>();
-        ai.DetermineStrategy(good.Members, map);
-        Path path = ai.WalkPath;
-        bool skip = path == null;
-        if (skip)
-        {
-            actingBaddies.RemoveAt(0);
-            if (!BaddiesFinished()) ActivateNextBaddieTurn();
-            return;
-        }
-        EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(true, actor.gameObject));
-        StartCoroutine(CommandManager.Instance.MoveCharacter(path.Tiles, actor));
-    }
 }
