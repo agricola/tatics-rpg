@@ -22,9 +22,10 @@ public class CombatMenu : MonoBehaviour
         ToggleButton(false, ButtonType.Wait);
     }
 	
-	private void OnDestroy()
+	private void OnDisable()
 	{
-        EventManager.Instance.RemoveListener<CombatMenuEvent>(OnMenuToggle);
+        EventManager em = EventManager.Instance;
+        if (em) em.RemoveListener<CombatMenuEvent>(OnMenuToggle);
     }
 
     private void OnMenuToggle(CombatMenuEvent e)

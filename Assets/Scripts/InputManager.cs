@@ -24,13 +24,17 @@ public class InputManager : MonoBehaviour
         Debug.Log("quit successfully!");
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         //if (state != null) state.Exit();
-        EventManager.Instance.RemoveListener<TileSelectEvent>(OnTileSelect);
-        EventManager.Instance.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
-        EventManager.Instance.RemoveListener<InputToggleEvent>(OnInputToggle);
-        EventManager.Instance.RemoveListener<SetInputStateEvent>(OnInputStateChange);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.RemoveListener<TileSelectEvent>(OnTileSelect);
+            em.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
+            em.RemoveListener<InputToggleEvent>(OnInputToggle);
+            em.RemoveListener<SetInputStateEvent>(OnInputStateChange);
+        }
     }
 
     private void Update()

@@ -15,7 +15,7 @@ public class RadiusManager : MonoBehaviour
         EventManager.Instance.AddListener<CharacterStateTransitionEvent>(OnCharacterMove);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         EventManager em = EventManager.Instance;
         if (em)
@@ -37,11 +37,11 @@ public class RadiusManager : MonoBehaviour
             OnCreateRadius(e as CreateRadiusEvent);
         } else if (e is DestroyRadiusEvent)
         {
-            OnDestroyRadius(e as DestroyRadiusEvent);
+            OnDisableRadius(e as DestroyRadiusEvent);
         }
     }
 
-    private void OnDestroyRadius(DestroyRadiusEvent e)
+    private void OnDisableRadius(DestroyRadiusEvent e)
     {
         currentCenter = null;
         //if (currentRadius != null) ToggleHighlightRadius(false);

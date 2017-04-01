@@ -15,9 +15,10 @@ public class OptionsMenu : MonoBehaviour {
         EventManager.Instance.AddListener<OptionsMenuEvent>(OnMenuToggle);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        EventManager.Instance.RemoveListener<OptionsMenuEvent>(OnMenuToggle);
+        EventManager em = EventManager.Instance;
+        if (em) em.RemoveListener<OptionsMenuEvent>(OnMenuToggle);
     }
 
     private void OnMenuToggle(OptionsMenuEvent e)

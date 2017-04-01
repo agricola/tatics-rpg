@@ -25,13 +25,6 @@ public class GameManager : MonoBehaviour
             return map;
         }
     }
-    public List<Character> Characters
-    {
-        get
-        {
-            return characters;
-        }
-    }
 
     private void Awake()
     {
@@ -44,33 +37,19 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         EventManager.Instance.AddListener<MapChangeEvent>(OnMapChange);
-        EventManager.Instance.AddListener<CharacterChangeEvent>(OnCharacterChange);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         EventManager em = EventManager.Instance;
         if (em)
         {
             EventManager.Instance.RemoveListener<MapChangeEvent>(OnMapChange);
-            EventManager.Instance.RemoveListener<CharacterChangeEvent>(OnCharacterChange);
         }
     }
 
     private void OnMapChange(MapChangeEvent e)
     {
         map = e.map;
-    }
-
-    private void OnCharacterChange(CharacterChangeEvent e)
-    {
-        if (e.create)
-        {
-            characters.Add(e.character);
-        }
-        else
-        {
-            characters.Remove(e.character);
-        }
     }
 }

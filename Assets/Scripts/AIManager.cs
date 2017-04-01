@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AIManager : MonoBehaviour {
     private List<Character> actingBaddies = new List<Character>();
-    private BattleGroup good;
     static AIManager instance;
+    Func<BattleGroup> updateGroup;
+
     public static AIManager Instance
     {
         get
@@ -32,7 +34,7 @@ public class AIManager : MonoBehaviour {
         EventManager.Instance.AddListener<FinishCombatEvent>(OnCombatFinish);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         EventManager em = EventManager.Instance;
         if (em)
@@ -50,35 +52,29 @@ public class AIManager : MonoBehaviour {
         }
     }*/
 
-    public void ExecuteEnemyTurns(BattleGroup good, BattleGroup bad)
+    public void ExecuteEnemyTurns(BattleGroup good, BattleGroup bad, Func<BattleGroup> updateGroup)
     {
-        this.good = good;
         Map map = GameManager.Instance.Map;
-        Debug.Log("good memers : " + good.Members.Count);
         //AIManager.Instance.DetermineStrategies(good.Members, bad.Members, map);
         actingBaddies = bad.Members;
+        this.updateGroup = updateGroup;
         ActivateNextBaddieTurn();
     }
 
     private void OnAnimationEvent(AnimationEvent e)
     {
-        if (e is ToggleWalkEvent)
+        if (e is AnimationWalkEvent)
         {
-            OnWalkToggle(e as ToggleWalkEvent);
+            OnWalkToggle(e as AnimationWalkEvent);
         }
     }
 
-    private void OnWalkToggle(ToggleWalkEvent e)
+    private void OnWalkToggle(AnimationWalkEvent e)
     {
         if (actingBaddies.Count <= 0) return;
-        if (!e.Act && e.Actor == actingBaddies[0].gameObject)
+        if (e.Status == AnimationStatus.Finish && e.Actor == actingBaddies[0].gameObject)
         {
             ExecuteActionStrategy(actingBaddies[0].GetComponent<EnemyAI>(), GameManager.Instance.Map);
-            //actingBaddies.RemoveAt(0);
-            /*if (!BaddiesFinished())
-            {*/
-            //}
-
         }
     }
 
@@ -97,28 +93,40 @@ public class AIManager : MonoBehaviour {
     {
         Map map = GameManager.Instance.Map;
         Character actor = actingBaddies[0];
-        ExecuteMoveStrategy(actor.GetComponent<EnemyAI>(), map);
+        Action execute = () => ExecuteMoveStrategy(actor.GetComponent<EnemyAI>(), map);
+        WaitBeforeAction(execute, 0.5f);
+    }
+
+    // put this somewhere else to be accessible by other stuff probably
+    private void WaitBeforeAction(Action action, float seconds)
+    {
+        StartCoroutine(WaitCoroutine(action, seconds));
+    }
+
+    private IEnumerator WaitCoroutine(Action action, float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        action();
     }
 
     private void ExecuteMoveStrategy(EnemyAI ai, Map map)
     {
-        Path path = ai.DetermineMoveStrategy(good.Members, map);
-        bool skip = path == null;
+        List<Character> good = updateGroup().Members;
+        Path path = ai.DetermineMoveStrategy(good, map);
+        bool skip = path == null || path.Tiles.Count == 1;
         if (skip)
         {
-            /*actingBaddies.RemoveAt(0);
-            if (!BaddiesFinished()) ActivateNextBaddieTurn();
-            return;*/
             ExecuteActionStrategy(ai, map);
             return;
         }
-        EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(true, ai.gameObject));
+        EventManager.Instance.Raise<AnimationEvent>(new AnimationWalkEvent(AnimationStatus.Start, ai.gameObject));
         StartCoroutine(CommandManager.Instance.MoveCharacter(path.Tiles, ai.GetComponent<Character>()));
     }
 
     private void ExecuteActionStrategy(EnemyAI ai, Map map)
     {
-        Character target = ai.DetermineActionStrategy(good.Members, map);
+        List<Character> good = updateGroup().Members;
+        Character target = ai.DetermineActionStrategy(good, map);
         bool skip = target == null;
         if (skip)
         {

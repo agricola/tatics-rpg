@@ -5,7 +5,7 @@ using UnityEngine;
 public class Damageable : MonoBehaviour {
 
     [SerializeField]
-    private int health = 100;
+    private int health = 10;
 
     public int Health
     {
@@ -20,7 +20,7 @@ public class Damageable : MonoBehaviour {
         EventManager.Instance.AddListener<TakeDamageEvent>(OnTakeDamageEvent);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         EventManager em = EventManager.Instance;
         if (em)
@@ -37,5 +37,10 @@ public class Damageable : MonoBehaviour {
     public void TakeDamage(int damage)
     {
         health -= damage;
+        if (health <= 0)
+        {
+            EventManager.Instance.Raise<AnimationEvent>(
+                new AnimationDeathEvent(AnimationStatus.Start, gameObject));
+        }
     }
 }

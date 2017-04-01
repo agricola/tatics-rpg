@@ -22,6 +22,16 @@ public class BattleGroup
         }
     }
 
+    public void AddMember(Character character)
+    {
+        members.Add(character);
+    }
+
+    public void RemoveMember(Character character)
+    {
+        if (members.Contains(character)) members.Remove(character);
+    }
+
     public BattleGroup(List<Character> members, bool isGood)
     {
         this.members = members;

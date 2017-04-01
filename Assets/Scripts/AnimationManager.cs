@@ -17,7 +17,7 @@ public class AnimationManager : MonoBehaviour
         EventManager.Instance.AddListener<TakeDamageEvent>(OnTakeDamageEvent);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         EventManager em = EventManager.Instance;
         if (em)
@@ -32,35 +32,50 @@ public class AnimationManager : MonoBehaviour
         if (e.Defender == gameObject)
         {
             TriggerReceiveHitAnimation(e.Direction);
-            if (!e.Defender.GetComponent<Character>().IsGood) EventManager.Instance.Raise(new InputToggleEvent(true));
+            if (!e.Defender.GetComponent<Character>().IsGood)
+            {
+                EventManager.Instance.Raise(new InputToggleEvent(true));
+            }
         }
     }
 
     private void OnAnimationEvent(AnimationEvent e)
     {
-        if (e is ToggleFightEvent)
+        if (e is AnimationWalkEvent)
         {
-            OnFightToggle(e as ToggleFightEvent);
+            OnWalkToggle(e as AnimationWalkEvent);
         }
-        else if (e is ToggleWalkEvent)
+        else if (e is AnimationDeathEvent)
         {
-            OnWalkToggle(e as ToggleWalkEvent);
+            OnDeathToggle(e as AnimationDeathEvent);
         }
     }
 
-    private void OnWalkToggle(ToggleWalkEvent e)
+    private void OnDeathToggle(AnimationDeathEvent e)
+    {
+        if (e.Actor != gameObject) return;
+        switch (e.Status)
+        {
+            case AnimationStatus.Start:
+                EventManager.Instance.Raise<AnimationEvent>(
+                    new AnimationDeathEvent(AnimationStatus.Finish, gameObject));
+                Debug.Log(gameObject.name + " dies! RIP");
+                // pointless ATM, add animation trigger here in future!
+                break;
+            case AnimationStatus.Finish:
+                EventManager.Instance.Raise(new CharacterChangeEvent(GetComponent<Character>(), false));
+                Destroy(gameObject);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void OnWalkToggle(AnimationWalkEvent e)
     {
         if (e.Actor == gameObject)
         {
             animator.SetTrigger(WalkTrigger);
-        }
-    }
-
-    private void OnFightToggle(ToggleFightEvent e)
-    {
-        if (e.Actor == gameObject)
-        {
-            animator.SetTrigger(FightTrigger);
         }
     }
 

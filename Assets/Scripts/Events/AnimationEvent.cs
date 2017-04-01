@@ -1,22 +1,30 @@
 ﻿using UnityEngine;
 
+public enum AnimationStatus { Start, Finish }
+
 public class AnimationEvent : GameEvent
 {
-    public bool Act { get; protected set; }
+    public AnimationStatus Status { get; protected set; }
     public GameObject Actor { get; protected set; }
-    public AnimationEvent(bool act, GameObject actor)
+    public AnimationEvent(AnimationStatus status, GameObject actor)
     {
-        Act = act;
+        Status = status;
         Actor = actor;
     }
 }
 
-public class ToggleWalkEvent : AnimationEvent
+public class AnimationWalkEvent : AnimationEvent
+
 {
-    public ToggleWalkEvent(bool act, GameObject actor) : base(act, actor) { }
+    public AnimationWalkEvent(AnimationStatus status, GameObject actor) : base(status, actor) { }
 }
 
-public class ToggleFightEvent : AnimationEvent
+public class AnimationFightEvent : AnimationEvent
 {
-    public ToggleFightEvent(bool act, GameObject actor) : base(act, actor) { }
+    public AnimationFightEvent(AnimationStatus status, GameObject actor) : base(status, actor) { }
+}
+
+public class AnimationDeathEvent : AnimationEvent
+{
+    public AnimationDeathEvent(AnimationStatus status, GameObject actor) : base(status, actor) { }
 }

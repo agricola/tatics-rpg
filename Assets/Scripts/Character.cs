@@ -93,16 +93,15 @@ public class Character : MonoBehaviour
     private void Start()
     {
         EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
-        EventManager.Instance.Raise(new CharacterChangeEvent(this, true));
+        // EventManager.Instance.Raise(new CharacterChangeEvent(this, true));
         EventManager.Instance.AddListener<ColliderToggleEvent>(OnColliderToggle);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         EventManager em = EventManager.Instance;
         if (em)
         {
-            em.Raise(new CharacterChangeEvent(this, false));
             em.RemoveListener<ColliderToggleEvent>(OnColliderToggle);
             em.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
         }

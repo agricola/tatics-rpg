@@ -33,12 +33,15 @@ public class CommandManager : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        //ResetPath();
-        EventManager.Instance.RemoveListener<PathfindEvent>(OnPathfindEvent);
-        EventManager.Instance.RemoveListener<MoveCharacterEvent>(OnMoveEvent);
-        EventManager.Instance.RemoveListener<FightEvent>(OnFight);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.RemoveListener<PathfindEvent>(OnPathfindEvent);
+            em.RemoveListener<MoveCharacterEvent>(OnMoveEvent);
+            em.RemoveListener<FightEvent>(OnFight);
+        }
     }
 
     private void Start()
@@ -154,7 +157,7 @@ public class CommandManager : MonoBehaviour
             }
             LinkedList<Tile> movement = path.Tiles;
             if (e.Character.IsGood) ResetPath();
-            EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(true, e.Character.gameObject));
+            EventManager.Instance.Raise<AnimationEvent>(new AnimationWalkEvent(AnimationStatus.Start, e.Character.gameObject));
             StartCoroutine(MoveCharacter(movement, e.Character));
         }
         else
@@ -179,6 +182,6 @@ public class CommandManager : MonoBehaviour
             EventManager.Instance.Raise(new InputToggleEvent(true));
             EventManager.Instance.Raise(new CharacterStateTransitionEvent(new ActionState()));
         }
-        EventManager.Instance.Raise<AnimationEvent>(new ToggleWalkEvent(false, c.gameObject));
+        EventManager.Instance.Raise<AnimationEvent>(new AnimationWalkEvent(AnimationStatus.Finish, c.gameObject));
     }
 }

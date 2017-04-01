@@ -26,7 +26,6 @@ public class SelectionState : IInputState
             ICharacterState state = (selected.Moved || selected.Acted) ? new ActionState() : new MoveState() as ICharacterState;
             TransitionCharacterState(state);
         }
-        EventManager.Instance.AddListener<AnimationEvent>(OnAnim);
         EventManager.Instance.AddListener<CharacterStateTransitionEvent>(OnCharStateTransition);
         EventManager.Instance.Raise(new ColliderToggleEvent(false));
     }
@@ -44,7 +43,6 @@ public class SelectionState : IInputState
         EventManager em = EventManager.Instance;
         if (em)
         {
-            em.RemoveListener<AnimationEvent>(OnAnim);
             em.RemoveListener<CharacterStateTransitionEvent>(OnCharStateTransition);
         }
         EventManager.Instance.Raise(new ColliderToggleEvent(true));
@@ -100,18 +98,6 @@ public class SelectionState : IInputState
             TransitionToNoSelection();
         }
         characterState.HandleInput();
-    }
-
-    private void OnAnim(AnimationEvent e)
-    {
-        if ((characterState is FightState) && !e.Act && e.Actor == selected.gameObject)
-        {
-            if (e is ToggleFightEvent)
-            {
-                Debug.Log("toggle fight!");
-                TransitionToNoSelection();
-            }
-        }
     }
 
     private void TransitionCharacterState(ICharacterState state)
