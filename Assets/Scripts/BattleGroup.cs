@@ -11,6 +11,7 @@ public class BattleGroup
     {
         get
         {
+            UpdateMembers();
             return new List<Character>(members);
         }
     }
@@ -20,6 +21,11 @@ public class BattleGroup
         {
             return isGood;
         }
+    }
+
+    private void UpdateMembers()
+    {
+        members.RemoveAll(x => x == null);
     }
 
     public void AddMember(Character character)

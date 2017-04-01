@@ -106,6 +106,6 @@ public class EnemyAI : MonoBehaviour
     // choose target when they are all neighbors
     private Character ChooseTarget(List<Character> targets)
     {
-        return targets[0];
+        return targets.Count > 0 ? targets[0] : null;
     }
 }

@@ -6,7 +6,9 @@ using UnityEngine;
 public class AIManager : MonoBehaviour {
     private List<Character> actingBaddies = new List<Character>();
     static AIManager instance;
-    Func<BattleGroup> updateGroup;
+
+    private BattleGroup goodGroup;
+    private BattleGroup badGroup;
 
     public static AIManager Instance
     {
@@ -16,7 +18,7 @@ public class AIManager : MonoBehaviour {
         }
     }
 
-    void Awake()
+    private void Awake()
     {
         if (instance == null)
         {
@@ -30,8 +32,17 @@ public class AIManager : MonoBehaviour {
 
     private void Start()
     {
-        EventManager.Instance.AddListener<AnimationEvent>(OnAnimationEvent);
-        EventManager.Instance.AddListener<FinishCombatEvent>(OnCombatFinish);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.AddListener<AnimationEvent>(OnAnimationEvent);
+            em.AddListener<FinishCombatEvent>(OnCombatFinish);
+            em.AddListener<EnemyTurnEvent>(OnEnemyTurnEvent);
+        }
+        else
+        {
+            Debug.Log("event manager not found");
+        }
     }
 
     private void OnDisable()
@@ -41,23 +52,25 @@ public class AIManager : MonoBehaviour {
         {
             em.RemoveListener<AnimationEvent>(OnAnimationEvent);
             em.RemoveListener<FinishCombatEvent>(OnCombatFinish);
+            em.RemoveListener<EnemyTurnEvent>(OnEnemyTurnEvent);
         }
     }
-    /*
-    public void DetermineStrategies(List<Character> good, List<Character> bad, Map map)
-    {
-        foreach (var enemy in bad)
-        {
-            enemy.GetComponent<EnemyAI>().DetermineStrategy(good,map);
-        }
-    }*/
 
-    public void ExecuteEnemyTurns(BattleGroup good, BattleGroup bad, Func<BattleGroup> updateGroup)
+    private void OnEnemyTurnEvent(EnemyTurnEvent e)
+    {
+        if (e.Status == EventStatus.Start)
+        {
+            ExecuteEnemyTurns(e.GoodGroup, e.BadGroup);
+        }
+    }
+
+    private void ExecuteEnemyTurns(BattleGroup good, BattleGroup bad)
     {
         Map map = GameManager.Instance.Map;
         //AIManager.Instance.DetermineStrategies(good.Members, bad.Members, map);
         actingBaddies = bad.Members;
-        this.updateGroup = updateGroup;
+        goodGroup = good;
+        badGroup = bad;
         ActivateNextBaddieTurn();
     }
 
@@ -83,7 +96,7 @@ public class AIManager : MonoBehaviour {
         bool finished = false;
         if (actingBaddies.Count <= 0)
         {
-            EventManager.Instance.Raise(new ChangeTurnEvent());
+            EventManager.Instance.Raise(new EnemyTurnEvent(goodGroup, badGroup, EventStatus.Finish));
             finished = true;
         }
         return finished;
@@ -111,8 +124,7 @@ public class AIManager : MonoBehaviour {
 
     private void ExecuteMoveStrategy(EnemyAI ai, Map map)
     {
-        List<Character> good = updateGroup().Members;
-        Path path = ai.DetermineMoveStrategy(good, map);
+        Path path = ai.DetermineMoveStrategy(goodGroup.Members, map);
         bool skip = path == null || path.Tiles.Count == 1;
         if (skip)
         {
@@ -125,8 +137,7 @@ public class AIManager : MonoBehaviour {
 
     private void ExecuteActionStrategy(EnemyAI ai, Map map)
     {
-        List<Character> good = updateGroup().Members;
-        Character target = ai.DetermineActionStrategy(good, map);
+        Character target = ai.DetermineActionStrategy(goodGroup.Members, map);
         bool skip = target == null;
         if (skip)
         {
@@ -143,7 +154,10 @@ public class AIManager : MonoBehaviour {
         if (e.Attacker == actingBaddies[0])
         {
             actingBaddies.RemoveAt(0);
-            if (!BaddiesFinished()) ActivateNextBaddieTurn();
+            if (!BaddiesFinished())
+            {
+                ActivateNextBaddieTurn();
+            }
         }
     }
 }

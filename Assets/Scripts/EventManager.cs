@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EventStatus { Start, Finish }
 public class GameEvent { }
 
 // class based on this https://gist.github.com/stfx/3786466

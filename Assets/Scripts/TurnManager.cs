@@ -11,28 +11,34 @@ public class TurnManager : MonoBehaviour
     private BattleGroup bad;
     private BattleGroup current;
     private AIManager aiManager;
-    private bool canChangeCharacters = false;
 
 	private void Start()
 	{
         turnNumber = 0;
-        EventManager.Instance.AddListener<EndTurnEvent>(OnEndTurn);
-        EventManager.Instance.AddListener<SetBattleGroupsEvent>(OnSetBattleGroups);
-        EventManager.Instance.AddListener<ChangeTurnEvent>(OnChangeTurnEvent);
-        EventManager.Instance.AddListener<CharacterChangeEvent>(OnCharacterChange);
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.AddListener<EndTurnEvent>(OnEndTurn);
+            em.AddListener<SetBattleGroupsEvent>(OnSetBattleGroups);
+            em.AddListener<CharacterChangeEvent>(OnCharacterChange);
+            em.AddListener<EnemyTurnEvent>(OnEnemyTurnEvent);
+        }
+        else
+        {
+            Debug.Log("event manager not found");
+        }
         aiManager = AIManager.Instance;
     }
 
     private void OnDisable()
     {
-        canChangeCharacters = false;
         EventManager em = EventManager.Instance;
         if (em)
         {
             em.RemoveListener<EndTurnEvent>(OnEndTurn);
             em.RemoveListener<SetBattleGroupsEvent>(OnSetBattleGroups);
-            em.RemoveListener<ChangeTurnEvent>(OnChangeTurnEvent);
             em.RemoveListener<CharacterChangeEvent>(OnCharacterChange);
+            em.RemoveListener<EnemyTurnEvent>(OnEnemyTurnEvent);
         }
     }
 
@@ -43,18 +49,23 @@ public class TurnManager : MonoBehaviour
         current = good;
     }
 
+    private void OnEnemyTurnEvent(EnemyTurnEvent e)
+    {
+        if (e.Status == EventStatus.Finish)
+        {
+            ChangeTurn();
+        }
+    }
+
     private void OnCharacterChange(CharacterChangeEvent e)
     {
-        Debug.Log("change character");
-        if (!canChangeCharacters) return;
-        BattleGroup group = e.character.IsGood ? good : bad;
-        Action<Character> change = e.create ? (Action<Character>)group.AddMember : group.RemoveMember;
-        change(e.character);
-        if (!e.create) CheckWinCondition();
+        Debug.Log("char change");
+        //if (!e.create) CheckWinCondition();
     }
 
     private void CheckWinCondition()
     {
+        Debug.Log("good: " + good.Members.Count + ", bad: " + bad.Members.Count);
         if (good.Members.Count <= 0)
         {
             Debug.Log("you lose!");
@@ -70,7 +81,6 @@ public class TurnManager : MonoBehaviour
     private void OnSetBattleGroups(SetBattleGroupsEvent e)
     {
         Initialize(e.good, e.bad);
-        canChangeCharacters = true;
     }
 
     private void OnEndTurn(EndTurnEvent e)
@@ -81,6 +91,7 @@ public class TurnManager : MonoBehaviour
     private void ChangeTurn()
     {
         EventManager.Instance.Raise(new CombatMenuEvent());
+        CheckWinCondition();
         if (current == bad)
         {
             EventManager.Instance.Raise(new InputToggleEvent(true));
@@ -93,19 +104,9 @@ public class TurnManager : MonoBehaviour
             EventManager.Instance.Raise(new InputToggleEvent(false));
             bad.ResetAllActions();
             current = bad;
-            AIManager.Instance.ExecuteEnemyTurns(good, bad, UpdateGoodGroup);
+            EventManager.Instance.Raise(new EnemyTurnEvent(good, bad, EventStatus.Start));
+            //AIManager.Instance.ExecuteEnemyTurns(good, bad, UpdateGoodGroup);
         }
     }
-
-    private BattleGroup UpdateGoodGroup()
-    {
-        return good;
-    }
-
-    private void OnChangeTurnEvent(ChangeTurnEvent e)
-    {
-        ChangeTurn();
-    }
-
 
 }
