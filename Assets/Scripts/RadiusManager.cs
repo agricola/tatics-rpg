@@ -6,8 +6,6 @@ using UnityEngine;
 public class RadiusManager : MonoBehaviour
 {
     private List<Tile> currentRadius;
-    private Tile currentCenter;
-    
 
     private void Start()
     {
@@ -43,7 +41,6 @@ public class RadiusManager : MonoBehaviour
 
     private void OnDisableRadius(DestroyRadiusEvent e)
     {
-        currentCenter = null;
         //if (currentRadius != null) ToggleHighlightRadius(false);
         currentRadius = null;
     }
@@ -54,7 +51,6 @@ public class RadiusManager : MonoBehaviour
         MapPosition centerPosition =
             MapPosition.VectorToMapPosition(e.character.gameObject.transform.localPosition);
         Tile centerTile = map.TileAtMapPosition(centerPosition);
-        currentCenter = centerTile;
         currentRadius = GenerateRadius(centerTile, e.character.MovementLimit, map);
         ToggleHighlightRadius(true);
     }

@@ -6,8 +6,6 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField]
     private Map map;
-    [SerializeField]
-    private List<Character> characters = new List<Character>();
 
     static GameManager instance;
     public static GameManager Instance
