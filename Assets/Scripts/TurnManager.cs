@@ -9,6 +9,7 @@ public class TurnManager : MonoBehaviour
     private int turnNumber;
     private BattleGroup good;
     private BattleGroup bad;
+    [SerializeField]
     private BattleGroup current;
 
 	private void Start()
@@ -20,6 +21,7 @@ public class TurnManager : MonoBehaviour
             em.AddListener<EndTurnEvent>(OnEndTurn);
             em.AddListener<SetBattleGroupsEvent>(OnSetBattleGroups);
             em.AddListener<EnemyTurnEvent>(OnEnemyTurnEvent);
+            em.AddListener<CharacterDeathEvent>(OnCharacterDeath);
         }
         else
         {
@@ -35,7 +37,13 @@ public class TurnManager : MonoBehaviour
             em.RemoveListener<EndTurnEvent>(OnEndTurn);
             em.RemoveListener<SetBattleGroupsEvent>(OnSetBattleGroups);
             em.RemoveListener<EnemyTurnEvent>(OnEnemyTurnEvent);
+            em.RemoveListener<CharacterDeathEvent>(OnCharacterDeath);
         }
+    }
+
+    private void OnCharacterDeath(CharacterDeathEvent e)
+    {
+        CheckWinCondition(e.DeadCharacter.GetComponent<Character>());
     }
 
     public void Initialize(BattleGroup good, BattleGroup bad)
@@ -53,14 +61,14 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    private void CheckWinCondition()
+    private void CheckWinCondition(Character justDied)
     {
-        if (good.Members.Count <= 0)
+        if (good.Members.Count == 1 && good.Members[0] == justDied)
         {
             Debug.Log("you lose!");
             SceneManager.LoadScene("End");
         }
-        else if (bad.Members.Count <= 0)
+        else if (bad.Members.Count == 1 && bad.Members[0] == justDied)
         {
             Debug.Log("you win!");
             SceneManager.LoadScene("End");
@@ -80,7 +88,6 @@ public class TurnManager : MonoBehaviour
     private void ChangeTurn(bool endGoodTurn = false)
     {
         if (endGoodTurn) current = good;
-        CheckWinCondition();
         if (current == bad)
         {
             EventManager.Instance.Raise(new InputToggleEvent(true));

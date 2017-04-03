@@ -15,9 +15,9 @@ public class Damageable : MonoBehaviour {
         }
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        EventManager.Instance.AddListener<TakeDamageEvent>(OnTakeDamageEvent);
+        EventManager.Instance.AddListener<ChangeHealthEvent>(OnChangeHealthEvent);
     }
 
     private void OnDisable()
@@ -25,13 +25,13 @@ public class Damageable : MonoBehaviour {
         EventManager em = EventManager.Instance;
         if (em)
         {
-            em.RemoveListener<TakeDamageEvent>(OnTakeDamageEvent);
+            em.RemoveListener<ChangeHealthEvent>(OnChangeHealthEvent);
         }
     }
 
-    private void OnTakeDamageEvent(TakeDamageEvent e)
+    private void OnChangeHealthEvent(ChangeHealthEvent e)
     {
-        if (e.Defender == gameObject) TakeDamage(e.Damage);
+        if (e.Defender.gameObject == gameObject) TakeDamage(e.Damage);
     }
 
     public void TakeDamage(int damage)

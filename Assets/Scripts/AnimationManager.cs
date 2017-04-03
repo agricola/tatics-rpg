@@ -29,14 +29,21 @@ public class AnimationManager : MonoBehaviour
 
     private void OnTakeDamageEvent(TakeDamageEvent e)
     {
-        if (e.Defender == gameObject)
+        GameObject def = e.Defender;
+        if (def == gameObject)
         {
-            TriggerReceiveHitAnimation(e.Direction);
-            if (!e.Defender.GetComponent<Character>().IsGood)
-            {
-                EventManager.Instance.Raise(new InputToggleEvent(true));
-            }
+            Character character = def.GetComponent<Character>();
+            TriggerReceiveHitAnimation(
+                e.Direction,
+                character,
+                () => RaiseChangeHealthEvent(e.Damage, character)
+                );
         }
+    }
+
+    private void RaiseChangeHealthEvent(int damage, Character character )
+    {
+        EventManager.Instance.Raise(new ChangeHealthEvent(damage, character));
     }
 
     private void OnAnimationEvent(AnimationEvent e)
@@ -59,11 +66,12 @@ public class AnimationManager : MonoBehaviour
             case AnimationStatus.Start:
                 EventManager.Instance.Raise<AnimationEvent>(
                     new AnimationDeathEvent(AnimationStatus.Finish, gameObject));
-                Debug.Log(gameObject.name + " dies! RIP");
                 // pointless ATM, add animation trigger here in future!
                 break;
             case AnimationStatus.Finish:
+                EventManager.Instance.Raise(new CharacterDeathEvent(e.Actor));
                 Destroy(gameObject);
+                
                 break;
             default:
                 break;
@@ -91,9 +99,12 @@ public class AnimationManager : MonoBehaviour
         //StartCoroutine(AttackMovementCoroutine(direction));
     }
 
-    public void TriggerReceiveHitAnimation(Vector2 direction)
+    public void TriggerReceiveHitAnimation(
+        Vector2 direction,
+        Character character,
+        Action changeHealth)
     {
-        StartCoroutine(HitCoroutine(direction));
+        StartCoroutine(HitCoroutine(direction, character, changeHealth));
     }
 
     /*IEnumerator AttackMovementCoroutine(Vector2 direction)
@@ -105,7 +116,7 @@ public class AnimationManager : MonoBehaviour
         transform.position = oldPos;
     }*/
 
-    IEnumerator HitCoroutine(Vector2 direction)
+    IEnumerator HitCoroutine(Vector2 direction, Character defender, Action changeHealth)
     {
         Material mat = GetComponent<Renderer>().material;
         Color oldColor = mat.color;
@@ -115,6 +126,13 @@ public class AnimationManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         transform.position = oldPos;
         mat.color = oldColor;
+        changeHealth();
+        EnableInputIfCharacterEvil(defender);
+    }
+
+    private void EnableInputIfCharacterEvil(Character character)
+    {
+        if (!character.IsGood) EventManager.Instance.Raise(new InputToggleEvent(true));
     }
 
     public void CheckScale(float direction)

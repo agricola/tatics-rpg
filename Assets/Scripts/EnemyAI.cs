@@ -6,7 +6,7 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     private Map map;
-    private readonly int limit = 99; // temp, replace with movement limit in future
+    //private readonly int limit = 5; // temp, replace with movement limit in future
 
     public IEnemyStrategy EnemyStrategy { get; private set; }
     public Path WalkPath { get; private set; }
@@ -21,7 +21,7 @@ public class EnemyAI : MonoBehaviour
             return null;
         }
         Queue<Character> closestTargets = ClosestTargets(targets, self);
-        Func<Map, MapPosition, Path> findPath = GetPath(self.MapPosition, limit);
+        Func<Map, MapPosition, Path> findPath = GetPath(self.MapPosition, self.MovementLimit);
         return FindBestPath(map, closestTargets, findPath);
     }
 

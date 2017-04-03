@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class BattleGroup
 {
+    [SerializeField]
     private List<Character> members;
+    [SerializeField]
     private bool isGood;
 
     public List<Character> Members

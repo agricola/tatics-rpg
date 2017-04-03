@@ -76,6 +76,7 @@ public class FightState : ICharacterState
     {
         EventManager.Instance.Raise(new InputToggleEvent(false));
         attacker.Acted = true;
+        // too many raises!
         EventManager.Instance.Raise(new FightEvent(attacker, defender));
         EventManager.Instance.Raise(new SetInputStateEvent(new NoSelectionState(), selected));
     }
