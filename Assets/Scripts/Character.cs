@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Character : MonoBehaviour
 {
@@ -92,8 +93,11 @@ public class Character : MonoBehaviour
 
     private void Start()
     {
-        EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
         // EventManager.Instance.Raise(new CharacterChangeEvent(this, true));
+        
+    }
+    private void OnEnable()
+    {
         EventManager.Instance.AddListener<ColliderToggleEvent>(OnColliderToggle);
     }
 
@@ -103,18 +107,16 @@ public class Character : MonoBehaviour
         if (em)
         {
             em.RemoveListener<ColliderToggleEvent>(OnColliderToggle);
-            em.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
         }
     }
 
     private void OnMouseDown()
-    { 
-        if (!Acted || !Moved) EventManager.Instance.Raise(new CharacterSelectEvent(isGood, this));
-    }
-
-    private void OnCharacterSelect(CharacterSelectEvent e)
     {
-        //if (e.character != this) ToggleHighlight(false);
+
+        if (!Acted && !EventSystem.current.IsPointerOverGameObject())
+        {
+            EventManager.Instance.Raise(new CharacterSelectEvent(isGood, this));
+        }
     }
 
     private void OnColliderToggle(ColliderToggleEvent e)

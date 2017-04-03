@@ -13,19 +13,12 @@ public class EventManager : MonoBehaviour
     {
         get
         {
-            return instance;
-        }
-    }
+            if (!instance)
+            {
+                instance = FindObjectOfType(typeof(EventManager)) as EventManager;
+            }
 
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
+            return instance;
         }
     }
 

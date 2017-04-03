@@ -17,7 +17,7 @@ public class Map : MonoBehaviour
     [SerializeField]
     private GameObject baseCharacter;
     [SerializeField]
-    private float blockedPercentage = 0.5f;
+    private float openTilePercentage = 0.9f;
 
     public int Width
     {
@@ -147,7 +147,8 @@ public class Map : MonoBehaviour
             {
                 float x = i + transform.position.x;
                 float y = j + transform.position.y;
-                Tile template = Random.value > blockedPercentage ? templateBlockedTile : templateTile;
+                Tile template = Random.value > openTilePercentage
+                    ? templateBlockedTile : templateTile;
                 //template.MapPosition = new MapPosition(i, j);
                 GameObject tile = PlaceTile(x, y, template);
                 tile.GetComponent<Tile>().MapPosition = new MapPosition(i, j);

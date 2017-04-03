@@ -10,7 +10,6 @@ public class TurnManager : MonoBehaviour
     private BattleGroup good;
     private BattleGroup bad;
     private BattleGroup current;
-    private AIManager aiManager;
 
 	private void Start()
 	{
@@ -20,14 +19,12 @@ public class TurnManager : MonoBehaviour
         {
             em.AddListener<EndTurnEvent>(OnEndTurn);
             em.AddListener<SetBattleGroupsEvent>(OnSetBattleGroups);
-            em.AddListener<CharacterChangeEvent>(OnCharacterChange);
             em.AddListener<EnemyTurnEvent>(OnEnemyTurnEvent);
         }
         else
         {
             Debug.Log("event manager not found");
         }
-        aiManager = AIManager.Instance;
     }
 
     private void OnDisable()
@@ -37,7 +34,6 @@ public class TurnManager : MonoBehaviour
         {
             em.RemoveListener<EndTurnEvent>(OnEndTurn);
             em.RemoveListener<SetBattleGroupsEvent>(OnSetBattleGroups);
-            em.RemoveListener<CharacterChangeEvent>(OnCharacterChange);
             em.RemoveListener<EnemyTurnEvent>(OnEnemyTurnEvent);
         }
     }
@@ -57,15 +53,8 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    private void OnCharacterChange(CharacterChangeEvent e)
-    {
-        Debug.Log("char change");
-        //if (!e.create) CheckWinCondition();
-    }
-
     private void CheckWinCondition()
     {
-        Debug.Log("good: " + good.Members.Count + ", bad: " + bad.Members.Count);
         if (good.Members.Count <= 0)
         {
             Debug.Log("you lose!");
@@ -85,12 +74,12 @@ public class TurnManager : MonoBehaviour
 
     private void OnEndTurn(EndTurnEvent e)
     {
-        ChangeTurn();
+        ChangeTurn(true);
     }
 
-    private void ChangeTurn()
+    private void ChangeTurn(bool endGoodTurn = false)
     {
-        EventManager.Instance.Raise(new CombatMenuEvent());
+        if (endGoodTurn) current = good;
         CheckWinCondition();
         if (current == bad)
         {
@@ -101,11 +90,9 @@ public class TurnManager : MonoBehaviour
         }
         else
         {
-            EventManager.Instance.Raise(new InputToggleEvent(false));
             bad.ResetAllActions();
             current = bad;
             EventManager.Instance.Raise(new EnemyTurnEvent(good, bad, EventStatus.Start));
-            //AIManager.Instance.ExecuteEnemyTurns(good, bad, UpdateGoodGroup);
         }
     }
 

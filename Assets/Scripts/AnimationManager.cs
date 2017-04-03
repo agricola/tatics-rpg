@@ -63,8 +63,6 @@ public class AnimationManager : MonoBehaviour
                 // pointless ATM, add animation trigger here in future!
                 break;
             case AnimationStatus.Finish:
-                EventManager.Instance.Raise(
-                    new CharacterChangeEvent(GetComponent<Character>(), false));
                 Destroy(gameObject);
                 break;
             default:

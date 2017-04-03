@@ -12,13 +12,32 @@ public class OptionsMenu : MonoBehaviour {
     {
         if (!optionsMenu) optionsMenu = GameObject.Find("OptionsMenu");
         ToggleMenu(false);
-        EventManager.Instance.AddListener<OptionsMenuEvent>(OnMenuToggle);
+        
+    }
+
+    private void OnEnable()
+    {
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.AddListener<EndTurnEvent>(OnEndTurn);
+            em.AddListener<OptionsMenuEvent>(OnMenuToggle);
+        }
     }
 
     private void OnDisable()
     {
         EventManager em = EventManager.Instance;
-        if (em) em.RemoveListener<OptionsMenuEvent>(OnMenuToggle);
+        if (em)
+        {
+            em.RemoveListener<OptionsMenuEvent>(OnMenuToggle);
+            em.RemoveListener<EndTurnEvent>(OnEndTurn);
+        }
+    }
+
+    private void OnEndTurn(EndTurnEvent e)
+    {
+        ToggleMenu(false);
     }
 
     private void OnMenuToggle(OptionsMenuEvent e)

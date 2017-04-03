@@ -75,7 +75,12 @@ public class InputManager : MonoBehaviour
 
     private void OnInputToggle(InputToggleEvent e)
     {
-        inputEnabled = e.inputEnabled;
+        ToggleInput(e.inputEnabled);
+    }
+
+    private void ToggleInput(bool enabled)
+    {
+        inputEnabled = enabled;
         EventManager.Instance.Raise(new CombatMenuEvent());
     }
 
@@ -93,7 +98,7 @@ public class InputManager : MonoBehaviour
     {
         //ChangeState(new NoInputState());
         TransitionToNoSelectionState();
-        EventManager.Instance.Raise(new OptionsMenuEvent(true));
+        ToggleInput(false);
         EventManager.Instance.Raise(new EndTurnEvent());
     }
 
