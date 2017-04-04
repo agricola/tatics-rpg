@@ -1,12 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class InputManager : MonoBehaviour
 {
-    private bool inputEnabled = true;
     [SerializeField]
+    private bool inputEnabled = true;
     private IInputState state;
 
 	private void Start()
@@ -14,15 +15,19 @@ public class InputManager : MonoBehaviour
         if (state != null) state.Exit();
         state = new NoSelectionState();
         state.Enter();
-        EventManager.Instance.AddListener<TileSelectEvent>(OnTileSelect);
-        EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
-        EventManager.Instance.AddListener<InputToggleEvent>(OnInputToggle);
-        EventManager.Instance.AddListener<SetInputStateEvent>(OnInputStateChange);
     }
 
-    private void OnApplicationQuit()
+    private void OnEnable()
     {
-        Debug.Log("quit successfully!");
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            EventManager.Instance.AddListener<TileSelectEvent>(OnTileSelect);
+            EventManager.Instance.AddListener<CharacterSelectEvent>(OnCharacterSelect);
+            EventManager.Instance.AddListener<InputToggleEvent>(OnInputToggle);
+            EventManager.Instance.AddListener<SetInputStateEvent>(OnInputStateChange);
+            EventManager.Instance.AddListener<AnimationEvent>(OnAnimationEvent);
+        }
     }
 
     private void OnDisable()
@@ -35,6 +40,7 @@ public class InputManager : MonoBehaviour
             em.RemoveListener<CharacterSelectEvent>(OnCharacterSelect);
             em.RemoveListener<InputToggleEvent>(OnInputToggle);
             em.RemoveListener<SetInputStateEvent>(OnInputStateChange);
+            em.RemoveListener<AnimationEvent>(OnAnimationEvent);
         }
     }
 
@@ -118,4 +124,14 @@ public class InputManager : MonoBehaviour
     {
         ChangeState(new NoSelectionState());
     }
+    private void OnAnimationEvent(AnimationEvent e)
+    {
+        if (e is AnimationWalkEvent &&
+            e.Status == AnimationStatus.Start &&
+            e.Actor.GetComponent<Character>().IsGood)
+        {
+            ToggleInput(false);
+        }
+    }
+
 }

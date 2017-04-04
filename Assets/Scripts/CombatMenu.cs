@@ -16,7 +16,6 @@ public class CombatMenu : MonoBehaviour
     private void Start()
 	{
         if (!combatMenu) combatMenu = GameObject.Find("FightMenu");
-        //ToggleMenu(false);
         EventManager.Instance.AddListener<CombatMenuEvent>(OnMenuToggle);
         ToggleButton(false, ButtonType.Fight);
         ToggleButton(false, ButtonType.Wait);
@@ -33,7 +32,6 @@ public class CombatMenu : MonoBehaviour
         ToggleButton(e.fightOn, ButtonType.Fight);
         ToggleButton(e.waitOn, ButtonType.Wait);
         ToggleMenu(e.fightOn || e.waitOn);
-        //Debug.Log("menu toggle finish");
     }
 
     private void ToggleMenu(bool menuOn)

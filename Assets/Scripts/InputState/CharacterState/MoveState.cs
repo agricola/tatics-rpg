@@ -49,7 +49,6 @@ public class MoveState : ICharacterState
     {
         bool skip = tile.Occupant == selected.gameObject;
         EventManager.Instance.Raise(new MoveCharacterEvent(selected, skip));
-        if (!skip) EventManager.Instance.Raise(new InputToggleEvent(false));
     }
 
     private void IssuePathfindCommand(Tile goal)

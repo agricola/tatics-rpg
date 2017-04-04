@@ -214,6 +214,7 @@ public class Map : MonoBehaviour
     {
         Character character = PlaceObject(0, 0, -.2f, baseCharacter)
             .GetComponent<Character>();
+        character.IsGood = isGood;
         string alignmentName = isGood ? "Good" : "Bad";
         character.gameObject.name =
             alignmentName + " Character " + Random.Range(100, 999);

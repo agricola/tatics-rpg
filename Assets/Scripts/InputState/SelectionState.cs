@@ -97,13 +97,6 @@ public class SelectionState : IInputState
             if (EventSystem.current.IsPointerOverGameObject()) return;
             TransitionToNoSelection();
         }
-        /*if (Input.GetMouseButtonDown(1) && characterState is ActionState)
-        {
-            if (EventSystem.current.IsPointerOverGameObject()) return;
-            Debug.Log("butt");
-            EventManager.Instance.Raise(new OptionsMenuEvent());
-            TransitionToNoSelection();
-        }*/
         characterState.HandleInput();
     }
 

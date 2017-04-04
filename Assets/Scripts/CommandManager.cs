@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class CommandManager : MonoBehaviour
 {
-    private GameObject map;
     private Pathfinder pathfinder;
 
     private Path path;
@@ -152,14 +151,18 @@ public class CommandManager : MonoBehaviour
             }
             LinkedList<Tile> movement = path.Tiles;
             if (e.Character.IsGood) ResetPath();
+            e.Character.Moved = true;
             EventManager.Instance.Raise<AnimationEvent>(new AnimationWalkEvent(AnimationStatus.Start, e.Character.gameObject));
             StartCoroutine(MoveCharacter(movement, e.Character));
         }
         else
         {
-            if (e.Character.IsGood) EventManager.Instance.Raise(new CharacterStateTransitionEvent(new ActionState()));
+            if (e.Character.IsGood)
+            {
+                e.Character.Moved = true;
+                EventManager.Instance.Raise(new CharacterStateTransitionEvent(new ActionState()));
+            }
         }
-        e.Character.Moved = true;
     }
 
     public IEnumerator MoveCharacter(LinkedList<Tile> tiles, Character c)
