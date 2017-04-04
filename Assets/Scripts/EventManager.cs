@@ -22,6 +22,11 @@ public class EventManager : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
+
     public delegate void EventDelegate<T>(T e) where T : GameEvent;
 
     readonly Dictionary<Type, Delegate> delegates = new Dictionary<Type, Delegate>();
