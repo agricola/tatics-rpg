@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class InputManager : MonoBehaviour
 {
     private bool inputEnabled = true;
+    [SerializeField]
     private IInputState state;
 
 	private void Start()

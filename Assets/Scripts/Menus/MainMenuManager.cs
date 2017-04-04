@@ -41,9 +41,16 @@ public class MainMenuManager : MonoBehaviour {
     }
 
     // levels managed in LevelMenu maybe or a LevelManager
-    public void LoadMainScene()
+    private void LoadMainScene()
     {
         SceneManager.LoadScene("Main");
+    }
+
+    public void LoadFirstLevel()
+    {
+        //
+        EventManager.Instance.Raise(new SelectLevelEvent(0));
+        LoadMainScene();
     }
 
     private void ChangeCurrentMenu(Menu menu)

@@ -51,11 +51,6 @@ public class CommandManager : MonoBehaviour
         EventManager.Instance.AddListener<MoveCharacterEvent>(OnMoveEvent);
         EventManager.Instance.AddListener<FightEvent>(OnFight);
     }
-	
-	private void Update()
-	{
-		if (!map) map = GameManager.Instance.Map.gameObject;
-    }
 
     private void OnPathfindEvent(PathfindEvent e)
     {
@@ -66,7 +61,7 @@ public class CommandManager : MonoBehaviour
             PathfindCreateEvent ev = e as PathfindCreateEvent;
             int limit = ev.limit;
             ResetOldPath();
-            Map map = GameManager.Instance.Map;
+            Map map = GameManager.Instance.CurrentMap;
             path = FindPath(ev.source, ev.goal, limit, map);
             HighlightTiles();
             findingPath = false;

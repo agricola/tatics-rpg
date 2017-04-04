@@ -66,7 +66,7 @@ public class AIManager : MonoBehaviour {
 
     private void ExecuteEnemyTurns(BattleGroup good, BattleGroup bad)
     {
-        Map map = GameManager.Instance.Map;
+        Map map = GameManager.Instance.CurrentMap;
         //AIManager.Instance.DetermineStrategies(good.Members, bad.Members, map);
         actingBaddies = bad.Members;
         goodGroup = good;
@@ -87,7 +87,9 @@ public class AIManager : MonoBehaviour {
         if (actingBaddies.Count <= 0) return;
         if (e.Status == AnimationStatus.Finish && e.Actor == actingBaddies[0].gameObject)
         {
-            ExecuteActionStrategy(actingBaddies[0].GetComponent<EnemyAI>(), GameManager.Instance.Map);
+            ExecuteActionStrategy(
+                actingBaddies[0].GetComponent<EnemyAI>(),
+                GameManager.Instance.CurrentMap);
         }
     }
 
@@ -104,7 +106,7 @@ public class AIManager : MonoBehaviour {
 
     private void ActivateNextBaddieTurn()
     {
-        Map map = GameManager.Instance.Map;
+        Map map = GameManager.Instance.CurrentMap;
         Character actor = actingBaddies[0];
         Action execute = () => ExecuteMoveStrategy(actor.GetComponent<EnemyAI>(), map);
         WaitBeforeAction(execute, 0.5f);

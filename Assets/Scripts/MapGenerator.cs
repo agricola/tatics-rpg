@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MapGenerator : MonoBehaviour {
@@ -18,6 +19,7 @@ public class MapGenerator : MonoBehaviour {
     // Use this for initialization
     void Start () {
         GenerateMap();
+        EventManager.Instance.Raise(new FinishGeneratingMapsEvent(LevelMaps));
     }
 	
 	// Update is called once per frame
@@ -44,6 +46,7 @@ public class MapGenerator : MonoBehaviour {
         {
             tiles[i] = new TileRow(rows[i].ToArray());
         }
-        return new MapTiles(tiles);
+        TileRow[] rev = tiles.Reverse().ToArray();
+        return new MapTiles(rev);
     }
 }

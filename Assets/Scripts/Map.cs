@@ -18,6 +18,10 @@ public class Map : MonoBehaviour
     private GameObject baseCharacter;
     [SerializeField]
     private float openTilePercentage = 0.9f;
+    [SerializeField]
+    private List<MapPosition> goodSpawn = new List<MapPosition>();
+    [SerializeField]
+    private List<MapPosition> badSpawn = new List<MapPosition>();
 
     public int Width
     {
@@ -128,7 +132,7 @@ public class Map : MonoBehaviour
     private void Start()
     {
         EventManager.Instance.Raise(new MapChangeEvent(this));
-        GenerateTiles();
+        //GenerateTiles();
     }
 
     private void Update()
@@ -136,25 +140,51 @@ public class Map : MonoBehaviour
 		
 	}
 
-    private void GenerateTiles()
+    public void BuildMap(MapTiles mapTiles)
     {
-        Random.InitState((int)System.DateTime.Now.Ticks);
+        
+        int height = mapTiles.Tiles.Length;
+        int width = mapTiles.Tiles[0].Row.Length;
         tiles = new Tile[width, height];
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < height; i++)
         {
-            for (int j = 0; j < height; j++)
+            TileType[] row = mapTiles.Tiles[i].Row;
+            for (int j = 0; j < width; j++)
             {
-                float x = i + transform.position.x;
-                float y = j + transform.position.y;
-                Tile template = Random.value > openTilePercentage
-                    ? templateBlockedTile : templateTile;
-                //template.MapPosition = new MapPosition(i, j);
-                GameObject tile = PlaceTile(x, y, template);
-                tile.GetComponent<Tile>().MapPosition = new MapPosition(i, j);
-                tiles[i, j] = tile.GetComponent<Tile>();
+                BuildTile(row[j], j, i);
             }
         }
         CreateBattleGroups(2, 2);
+    }
+
+    private void BuildTile(TileType tile, int x, int y)
+    {
+        Tile placedTile = null;
+        switch (tile)
+        {
+            case TileType.Ground:
+                placedTile = PlaceTile(x, y, templateTile);
+                break;
+            case TileType.Wall:
+                placedTile = PlaceTile(x, y, templateBlockedTile);
+                break;
+            case TileType.GoodSpawn:
+                placedTile = PlaceTile(x, y, templateTile);
+                goodSpawn.Add(new MapPosition(x, y));
+                break;
+            case TileType.BadSpawn:
+                placedTile  = PlaceTile(x, y, templateTile);
+                badSpawn.Add(new MapPosition(x, y));
+                break;
+            default:
+                Debug.Log("Not a correct TileType value");
+                break;
+        }
+        if (placedTile != null)
+        {
+            placedTile.MapPosition = new MapPosition(x, y);
+            tiles[x, y] = placedTile;
+        }
     }
 
     private void CreateBattleGroups(int good, int bad)
@@ -169,8 +199,7 @@ public class Map : MonoBehaviour
         List<Character> members = new List<Character>();
         for (int i = 0; i < amount; i++)
         {
-            Character c = SpawnCharacter();
-            c.IsGood = isGood;
+            Character c = SpawnCharacter(isGood);
             if (!isGood)
             {
                 c.GetComponent<SpriteRenderer>().color = Color.yellow;
@@ -181,22 +210,40 @@ public class Map : MonoBehaviour
         return new BattleGroup(members, isGood);
     }
 
-    private Character SpawnCharacter()
+    private Character SpawnCharacter(bool isGood)
     {
-        Tile placedTile = RandomTile();
-        GameObject p = PlaceObject(0, 0, -.2f, baseCharacter);
-        p.name = "Character " + Random.Range(100, 999); 
+        Character character = PlaceObject(0, 0, -.2f, baseCharacter)
+            .GetComponent<Character>();
+        string alignmentName = isGood ? "Good" : "Bad";
+        character.gameObject.name =
+            alignmentName + " Character " + Random.Range(100, 999);
         //p.transform.rotation = Quaternion.Euler(-15, 0, 0);
-        while (!placedTile.MoveObjectTo(p))
+        List<MapPosition> spawnSpots = isGood ? goodSpawn : badSpawn;
+        bool placed = false;
+        foreach (MapPosition spot in spawnSpots)
         {
-            placedTile = RandomTile();
+            if (TileAtMapPosition(spot).MoveObjectTo(character.gameObject))
+            {
+                placed = true;
+                break;
+            }
         }
-        return p.GetComponent<Character>();
+        if (!placed)
+        {
+            Debug.Log("Couldn't place character");
+            return null;
+        }
+        else
+        {
+            return character;
+        }
     }
 
-    private GameObject PlaceTile(float x, float y, Tile tile)
+    private Tile PlaceTile(float x, float y, Tile tile)
     {
-        return PlaceObject(x, y, 0, tile.gameObject);
+        float adjustedX = transform.position.x + x;
+        float adjustedY = transform.position.y + y;
+        return PlaceObject(adjustedX, adjustedY, 0, tile.gameObject).GetComponent<Tile>();
     }
 
     private GameObject PlaceObject(float x, float y, float z, GameObject obj)

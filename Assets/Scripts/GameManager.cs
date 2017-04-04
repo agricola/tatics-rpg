@@ -1,13 +1,26 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
-    private Map map;
+    private Map currentMap;
+    [SerializeField]
+    private MapTiles currentMapTiles;
+    [SerializeField]
+    private List<MapTiles> levelMaps;
 
-    static GameManager instance;
+    public List<MapTiles> LevelMaps
+    {
+        get
+        {
+            return new List<MapTiles>(levelMaps);
+        }
+    }
+
+    private static GameManager instance;
     public static GameManager Instance
     {
         get
@@ -16,11 +29,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public Map Map
+    public Map CurrentMap
     {
         get
         {
-            return map;
+            return currentMap;
         }
     }
 
@@ -35,7 +48,19 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        EventManager.Instance.AddListener<MapChangeEvent>(OnMapChange);
+        
+    }
+
+    private void OnEnable()
+    {
+        EventManager em = EventManager.Instance;
+        if (em)
+        {
+            em.AddListener<MapChangeEvent>(OnMapChange);
+            em.AddListener<FinishGeneratingMapsEvent>(OnFinishGeneratingMaps);
+            em.AddListener<SelectLevelEvent>(OnSelectLevel);
+        }
+        
     }
 
     private void OnDisable()
@@ -43,12 +68,30 @@ public class GameManager : MonoBehaviour
         EventManager em = EventManager.Instance;
         if (em)
         {
-            EventManager.Instance.RemoveListener<MapChangeEvent>(OnMapChange);
+            em.RemoveListener<MapChangeEvent>(OnMapChange);
+            em.RemoveListener<FinishGeneratingMapsEvent>(OnFinishGeneratingMaps);
+            em.RemoveListener<SelectLevelEvent>(OnSelectLevel);
         }
+    }
+
+    private void OnFinishGeneratingMaps(FinishGeneratingMapsEvent e)
+    {
+        levelMaps = e.Maps;
     }
 
     private void OnMapChange(MapChangeEvent e)
     {
-        map = e.map;
+        currentMap = e.map;
+        currentMap.BuildMap(currentMapTiles);
+    }
+
+    private void OnSelectLevel(SelectLevelEvent e)
+    {
+        SetMapTiles(e.SelectedLevel);
+    }
+
+    private void SetMapTiles(int mapIndex)
+    {
+        currentMapTiles = levelMaps[mapIndex];
     }
 }

@@ -11,7 +11,7 @@ public class FightState : ICharacterState
     public void Enter(Character selected = null, Map map = null)
     {
         this.selected = selected;
-        Map m = GameManager.Instance.Map;
+        Map m = GameManager.Instance.CurrentMap;
         neighbors = m.GetNeighborsIncBlocked(selected.MapPosition);
         HighlightNeighbors(neighbors, HighlightType.Radius, HighlightEvilTile);
         EventManager.Instance.Raise(new CombatMenuEvent());

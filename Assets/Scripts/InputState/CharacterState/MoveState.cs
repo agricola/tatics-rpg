@@ -55,7 +55,7 @@ public class MoveState : ICharacterState
     private void IssuePathfindCommand(Tile goal)
     {
         //if (!selected || !inputEnabled) return;
-        Map map = GameManager.Instance.Map;
+        Map map = GameManager.Instance.CurrentMap;
         Tile source = map.Tiles[(int)selected.transform.localPosition.x,
             (int)selected.transform.localPosition.y];
         int limit = source.GetComponent<Tile>().Occupant.GetComponent<Character>().MovementLimit;
