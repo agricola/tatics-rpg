@@ -107,7 +107,6 @@ public class AIManager : MonoBehaviour {
     private void ActivateNextBaddieTurn()
     {
         Map map = GameManager.Instance.CurrentMap;
-        Debug.Log(map);
         Character actor = actingBaddies[0];
         Action execute = () => ExecuteMoveStrategy(actor.GetComponent<EnemyAI>(), map);
         WaitBeforeAction(execute, 0.5f);
