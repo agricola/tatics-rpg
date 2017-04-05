@@ -692,8 +692,8 @@ MonoBehaviour:
     type: 2}
   templateBlockedTile: {fileID: 114080731790344026, guid: 8518ec7827074f64eaa3395562978a5d,
     type: 2}
-  width: 11
-  height: 8
+  width: 13
+  height: 10
   baseCharacter: {fileID: 1258815535986354, guid: 7f7f32c6e8d57fa4fb7a192c011827d5,
     type: 2}
   baseEnemyCharacter: {fileID: 1991713684609260, guid: 27528b57c9bb27b47b44f3b3770c9b68,
