@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 384eafdf6242d6044b4c22ba1441fbe1
-timeCreated: 1491350674
+guid: 3ae6cac91d6e0914ab7de992d363fb3a
+timeCreated: 1491353870
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: anim_outline_test_0
-    21300002: anim_outline_test_1
+    21300000: skeleton_walk_0
+    21300002: skeleton_walk_1
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -63,7 +63,7 @@ TextureImporter:
   - buildTarget: Standalone
     maxTextureSize: 2048
     textureFormat: 4
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -71,7 +71,7 @@ TextureImporter:
   - buildTarget: WebGL
     maxTextureSize: 2048
     textureFormat: 4
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -80,7 +80,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: anim_outline_test_0
+      name: skeleton_walk_0
       rect:
         serializedVersion: 2
         x: 0
@@ -93,7 +93,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: anim_outline_test_1
+      name: skeleton_walk_1
       rect:
         serializedVersion: 2
         x: 24

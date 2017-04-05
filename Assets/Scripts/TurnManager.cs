@@ -7,7 +7,9 @@ using UnityEngine.SceneManagement;
 public class TurnManager : MonoBehaviour
 {
     private int turnNumber;
+    [SerializeField]
     private BattleGroup good;
+    [SerializeField]
     private BattleGroup bad;
     [SerializeField]
     private BattleGroup current;

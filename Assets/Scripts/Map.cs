@@ -17,6 +17,8 @@ public class Map : MonoBehaviour
     [SerializeField]
     private GameObject baseCharacter;
     [SerializeField]
+    private GameObject baseEnemyCharacter;
+    [SerializeField]
     private float openTilePercentage = 0.9f;
     [SerializeField]
     private List<MapPosition> goodSpawn = new List<MapPosition>();
@@ -200,11 +202,6 @@ public class Map : MonoBehaviour
         for (int i = 0; i < amount; i++)
         {
             Character c = SpawnCharacter(isGood);
-            if (!isGood)
-            {
-                c.GetComponent<SpriteRenderer>().color = Color.yellow;
-                c.gameObject.AddComponent<EnemyAI>();
-            }
             members.Add(c);
         }
         return new BattleGroup(members, isGood);
@@ -212,6 +209,7 @@ public class Map : MonoBehaviour
 
     private Character SpawnCharacter(bool isGood)
     {
+        GameObject baseCharacter = isGood ? this.baseCharacter : baseEnemyCharacter;
         Character character = PlaceObject(0, 0, -.2f, baseCharacter)
             .GetComponent<Character>();
         character.IsGood = isGood;
