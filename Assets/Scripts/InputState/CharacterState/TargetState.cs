@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 public abstract class TargetState : ICharacterState
@@ -11,6 +10,11 @@ public abstract class TargetState : ICharacterState
     protected abstract void TileHighlight(Tile tile);
     protected abstract void TileAction(Tile tile);
     protected abstract void CreateTargetableTiles();
+
+    protected virtual void HighlightOther()
+    {
+        return;
+    }
 
     public void Enter(Character selected = null, Map map = null)
     {
@@ -57,8 +61,13 @@ public abstract class TargetState : ICharacterState
 
     public void OnTileSelect(TileSelectEvent e)
     {
+        if (targetableTiles == null || targetableTiles.Count <= 0) return;
         var match = targetableTiles.Where(x => x == e.tile);
-        if (!match.Contains(e.tile)) return;
+        if (!match.Contains(e.tile))
+        {
+            HighlightOther();
+            return;
+        }
         if (e.selectType == TileSelectType.Highlight)
         {
             TileHighlight(e.tile);

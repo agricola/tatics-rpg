@@ -3,58 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class FightState : ICharacterState
+public class FightState : TargetState
 {
-    private Character selected;
-    private List<Tile> neighbors;
 
-    public void Enter(Character selected = null, Map map = null)
+    protected override void TileHighlight(Tile tile)
     {
-        this.selected = selected;
+        HighlightNeighbors(targetableTiles, HighlightType.Radius, HighlightEvilTile);
+        HighlightEvilTile(tile, HighlightType.Targeting);
+    }
+    protected override void HighlightOther()
+    {
+        HighlightNeighbors(targetableTiles, HighlightType.Radius, HighlightEvilTile);
+    }
+    protected override void TileAction(Tile tile)
+    {
+        if (!tile.Occupant) return;
+        InitiateFight(selected, tile.Occupant.GetComponent<Character>());
+    }
+
+    protected override void CreateTargetableTiles()
+    {
         Map m = GameManager.Instance.CurrentMap;
-        neighbors = m.GetNeighborsIncBlocked(selected.MapPosition);
-        HighlightNeighbors(neighbors, HighlightType.Radius, HighlightEvilTile);
-        EventManager.Instance.Raise(new CombatMenuEvent());
-        
-        //InitiateFight(selected, selected);
-        // EventManager.Instance.Raise(new CombatMenuEvent(false, true, true));
+        List<Tile> neighbors = m.GetNeighborsIncBlocked(selected.MapPosition);
+        List<Tile> enemyNeighbors = neighbors.Where(x => x.Occupant != null).ToList();
+        targetableTiles = enemyNeighbors;
+        HighlightNeighbors(enemyNeighbors, HighlightType.Radius, HighlightEvilTile);
     }
-
-    public void Exit()
-    {
-        // send out end fight event
-        HighlightNeighbors(neighbors, HighlightType.None, HighlightTile);
-       
-        return;
-    }
-
-    public void HandleInput()
-    {
-        return;
-    }
-
-    public void OnCharacterSelect(CharacterSelectEvent e)
-    {
-        return;
-    }
-
-    public void OnTileSelect(TileSelectEvent e)
-    {
-        if (selected.Acted) return;
-        var match = neighbors.Where(x => x == e.tile);
-        if (!match.Contains(e.tile)) return;
-        if (e.selectType == TileSelectType.Highlight)
-        {
-            HighlightNeighbors(neighbors, HighlightType.Radius, HighlightEvilTile);
-            HighlightEvilTile(e.tile, HighlightType.Targeting);
-        }
-        else if (e.selectType == TileSelectType.Move)
-        {
-            if (!e.tile.Occupant) return;
-            InitiateFight(selected, e.tile.Occupant.GetComponent<Character>());
-        }
-    }
-
     private void HighlightEvilTile(Tile tile, HighlightType type)
     {
         GameObject occ = tile.Occupant;
@@ -65,11 +39,6 @@ public class FightState : ICharacterState
         {
             tile.Highlight(type);
         }
-    }
-
-    private void HighlightTile(Tile tile, HighlightType type)
-    {
-        tile.Highlight(type);
     }
 
     private void InitiateFight(Character attacker, Character defender)
@@ -92,4 +61,5 @@ public class FightState : ICharacterState
             action(tile, type);
         }
     }
+
 }
