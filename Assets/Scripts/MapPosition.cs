@@ -23,4 +23,16 @@ public class MapPosition
         return new MapPosition((int)vector.x, (int)vector.y);
     }
 
+    public MapPosition Increment(bool horizontal, int direction)
+    {
+        if (horizontal)
+        {
+            return new MapPosition(x + direction, y);
+        }
+        else
+        {
+            return new MapPosition(x, y + direction);
+        }
+    }
+
 }

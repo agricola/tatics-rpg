@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
+public enum Direction { Up, Down, Left, Right}
 public class Map : MonoBehaviour
 {
     [SerializeField]
@@ -45,9 +45,38 @@ public class Map : MonoBehaviour
         }
     }
 
+    public bool IsWithinBounds(MapPosition pos)
+    {
+        return IsWithinBounds(pos.X, pos.Y);
+    }
     public bool IsWithinBounds(int x, int y)
     {
         return (x < Width && y < Height && x >= 0 && y >= 0) ? true : false;
+    }
+
+    public List<Tile> GetTilesInCross(MapPosition origin, int limit)
+    {
+        List<Tile> tiles = new List<Tile>();
+        tiles.AddRange(GetTilesInLine(origin, true, -1, limit));
+        tiles.AddRange(GetTilesInLine(origin, true, 1, limit));
+        tiles.AddRange(GetTilesInLine(origin, false, -1, limit));
+        tiles.AddRange(GetTilesInLine(origin, false, 1, limit));
+        return tiles;
+    }
+
+    public List<Tile> GetTilesInLine(MapPosition origin, bool horizontal, int dir, int limit)
+    {
+        List<Tile> tiles = new List<Tile>();
+        for (int i = 1; i < limit + 1; i += dir)
+        {
+            MapPosition position = origin.Increment(horizontal, dir);
+            Tile possible = IsWithinBounds(position) ? TileAtMapPosition(position) : null;
+            if (possible != null)
+            {
+                tiles.Add(possible);
+            }
+        }
+        return tiles;
     }
 
     public List<Tile> GetNeighbors(MapPosition pos)
