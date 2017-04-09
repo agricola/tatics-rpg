@@ -87,26 +87,10 @@ public class Tile : MonoBehaviour
             default:
                 break;
         }
-        if (!GetComponent<Renderer>()) return;
-        Color possibleOldColor = GetComponent<Renderer>().material.color;
+        Renderer renderer = GetComponent<Renderer>();
+        Color possibleOldColor = renderer.material.color;
         if (possibleOldColor != targetingColor) oldColor = possibleOldColor;
-        if (color != neutralColor)
-        {
-            EventManager.Instance.AddListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
-            modified = true;
-        }
-        else if (modified)
-        {
-            EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
-            modified = false;
-        }
-        GetComponent<Renderer>().material.color = color;
-    }
-
-    private void OnUnhighlightTilesEvent(UnhighlightTilesEvent e)
-    {
-        //EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
-        Highlight(HighlightType.None);
+        renderer.material.color = color;
     }
 
     private void OnMouseEnter()
@@ -114,31 +98,11 @@ public class Tile : MonoBehaviour
         RaiseTileEvent(TileSelectType.Highlight);
     }
 
-    private void OnMouseDown()
-    {/*
-        if (EventSystem.current.IsPointerOverGameObject()) return;
-        RaiseTileEvent(TileSelectType.Cancel);*/
-    }
-
-    private void OnMouseExit()
-    {
-        //EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
-    }
-
     private void OnMouseOver()
     {
         if (Input.GetMouseButtonDown(1))
         {
             RaiseTileEvent(TileSelectType.Move);
-        }
-    }
-
-    private void OnDisable()
-    {
-        EventManager em = EventManager.Instance;
-        if (em)
-        {
-            if (modified) EventManager.Instance.RemoveListener<UnhighlightTilesEvent>(OnUnhighlightTilesEvent);
         }
     }
 

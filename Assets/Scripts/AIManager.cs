@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AIManager : MonoBehaviour {
+   
     private List<Character> actingBaddies = new List<Character>();
     static AIManager instance;
-
     private BattleGroup goodGroup;
     private BattleGroup badGroup;
 
@@ -29,8 +29,8 @@ public class AIManager : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-
-    private void Start()
+    
+    private void OnEnable()
     {
         EventManager em = EventManager.Instance;
         if (em)

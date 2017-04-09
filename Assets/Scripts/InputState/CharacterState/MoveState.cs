@@ -1,48 +1,24 @@
 ﻿using System;
 using UnityEngine;
 
-public class MoveState : ICharacterState
+public class MoveState : TargetState
 {
-    private Character selected;
-
-    public void Enter(Character selected = null, Map map = null)
+    protected override void CreateTargetableTiles()
     {
-        this.selected = selected;
-        EventManager.Instance.Raise<RadiusEvent>(new CreateRadiusEvent(selected));
-        EventManager.Instance.Raise(new CombatMenuEvent());
+        MapPosition center = selected.MapPosition;
+        int radius = selected.MovementLimit;
+        targetableTiles = RadiusManager.Instance.GetRadius(center, radius);
+        requiresPathfindClear = true;
     }
 
-    public void Exit()
+    protected override void TileAction(Tile tile)
     {
-        EndPathfinding();
+        IssueMoveCommand(tile);
     }
 
-    public void HandleInput()
+    protected override void TileHighlight(Tile tile)
     {
-        return;
-    }
-
-    public void OnCharacterSelect(CharacterSelectEvent e)
-    {
-        return;
-    }
-
-    public void OnTileSelect(TileSelectEvent e)
-    {
-        if (selected.Moved) return;
-        if (e.selectType == TileSelectType.Highlight)
-        {
-            IssuePathfindCommand(e.tile);
-        }
-        else if (e.selectType == TileSelectType.Move)
-        {
-            IssueMoveCommand(e.tile);
-        }
-    }
-
-    private void EndPathfinding()
-    {
-        EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
+        IssuePathfindCommand(tile);
     }
 
     private void IssueMoveCommand(Tile tile)
@@ -55,9 +31,8 @@ public class MoveState : ICharacterState
     {
         //if (!selected || !inputEnabled) return;
         Map map = GameManager.Instance.CurrentMap;
-        Tile source = map.Tiles[(int)selected.transform.localPosition.x,
-            (int)selected.transform.localPosition.y];
-        int limit = source.GetComponent<Tile>().Occupant.GetComponent<Character>().MovementLimit;
+        Tile source = map.TileAtMapPosition(selected.MapPosition);
+        int limit = selected.MovementLimit;
         PathfindCreateEvent e = new PathfindCreateEvent(source, goal, limit);
         EventManager.Instance.Raise<PathfindEvent>(e);
     }

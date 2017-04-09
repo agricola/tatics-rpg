@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
@@ -7,52 +8,33 @@ public class RadiusManager : MonoBehaviour
 {
     private List<Tile> currentRadius;
 
-    private void Start()
+    static RadiusManager instance;
+    public static RadiusManager Instance
     {
-        EventManager.Instance.AddListener<RadiusEvent>(OnRadiusEvent);
-        EventManager.Instance.AddListener<CharacterStateTransitionEvent>(OnCharacterMove);
-    }
-
-    private void OnDisable()
-    {
-        EventManager em = EventManager.Instance;
-        if (em)
+        get
         {
-            em.RemoveListener<RadiusEvent>(OnRadiusEvent);
-            em.RemoveListener<CharacterStateTransitionEvent>(OnCharacterMove);
+            return instance;
         }
     }
 
-    private void OnCharacterMove(CharacterStateTransitionEvent e)
+    private void Awake()
     {
-        EventManager.Instance.Raise(new UnhighlightTilesEvent());
-    }
-
-    private void OnRadiusEvent(RadiusEvent e)
-    {
-        if (e is CreateRadiusEvent)
+        if (instance == null)
         {
-            OnCreateRadius(e as CreateRadiusEvent);
-        } else if (e is DestroyRadiusEvent)
+            instance = this;
+        }
+        else
         {
-            OnDisableRadius(e as DestroyRadiusEvent);
+            Destroy(gameObject);
         }
     }
 
-    private void OnDisableRadius(DestroyRadiusEvent e)
-    {
-        //if (currentRadius != null) ToggleHighlightRadius(false);
-        currentRadius = null;
-    }
-
-    private void OnCreateRadius(CreateRadiusEvent e)
+    public List<Tile> GetRadius(MapPosition center, int limit)
     {
         Map map = GameManager.Instance.CurrentMap;
-        MapPosition centerPosition =
-            MapPosition.VectorToMapPosition(e.character.gameObject.transform.localPosition);
-        Tile centerTile = map.TileAtMapPosition(centerPosition);
-        currentRadius = GenerateRadius(centerTile, e.character.MovementLimit, map);
-        ToggleHighlightRadius(true);
+        Tile centerTile = map.TileAtMapPosition(center);
+        return GenerateRadius(centerTile, limit, map);
+        //ToggleHighlightRadius(true);
     }
 
     private List<Tile> GenerateRadius(Tile center, int radius, Map map)

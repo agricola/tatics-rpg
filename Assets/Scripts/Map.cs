@@ -19,8 +19,6 @@ public class Map : MonoBehaviour
     [SerializeField]
     private GameObject baseEnemyCharacter;
     [SerializeField]
-    private float openTilePercentage = 0.9f;
-    [SerializeField]
     private List<MapPosition> goodSpawn = new List<MapPosition>();
     [SerializeField]
     private List<MapPosition> badSpawn = new List<MapPosition>();
@@ -136,11 +134,6 @@ public class Map : MonoBehaviour
         EventManager.Instance.Raise(new MapChangeEvent(this));
         //GenerateTiles();
     }
-
-    private void Update()
-    {
-		
-	}
 
     public void BuildMap(MapTiles mapTiles)
     {

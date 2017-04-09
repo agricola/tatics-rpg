@@ -56,6 +56,22 @@ public class AnimationManager : MonoBehaviour
         {
             OnDeathToggle(e as AnimationDeathEvent);
         }
+        else if (e is AnimationFightEvent)
+        {
+            OnFightToggle(e as AnimationFightEvent);
+        }
+    }
+
+    private void OnFightToggle(AnimationFightEvent e)
+    {
+        if (e.Attacker.gameObject != gameObject) return;
+        Character attacker = e.Attacker;
+        Character defender = e.Defender;
+        int damage = attacker.Damage;
+        Vector2 direction = DirectionToFace(attacker.MapPosition, defender.MapPosition);
+        Action onHit = (() => EventManager.Instance.Raise(
+            new TakeDamageEvent(defender.gameObject, damage, direction)));
+        TriggerFightAnimation(direction, damage, onHit);
     }
 
     private void OnDeathToggle(AnimationDeathEvent e)
@@ -86,7 +102,21 @@ public class AnimationManager : MonoBehaviour
         }
     }
 
-    public void TriggerFightAnimation(Vector2 direction, GameObject def, int dmg)
+    private Vector2 DirectionToFace(MapPosition source, MapPosition target)
+    {
+        MapPosition ap = source;
+        MapPosition dp = target;
+        float xDiff = dp.X - ap.X;
+        float yDiff = dp.Y - ap.Y;
+        float x = xDiff == 0 ? 0 : xDiff / 5;
+        float y = yDiff == 0 ? 0 : yDiff / 5;
+        return new Vector2(x, y);
+    }
+
+    private void TriggerFightAnimation(
+        Vector2 direction,
+        int dmg,
+        Action onHit)
     {
         if ((transform.localScale.x * direction.x) < 0)
         {
@@ -94,7 +124,7 @@ public class AnimationManager : MonoBehaviour
             scale.x *= -1;
             transform.localScale = scale;
         }
-        hitWithWeapon = (() => EventManager.Instance.Raise(new TakeDamageEvent(def, dmg, direction)));
+        hitWithWeapon = () => onHit();
         animator.SetTrigger(FightTrigger);
         //StartCoroutine(AttackMovementCoroutine(direction));
     }

@@ -62,12 +62,12 @@ public class CommandManager : MonoBehaviour
             ResetOldPath();
             Map map = GameManager.Instance.CurrentMap;
             path = FindPath(ev.source, ev.goal, limit, map);
-            HighlightTiles();
+            HighlightPathTiles();
             findingPath = false;
         }
         else if (e is CancelPathfindEvent)
         {
-            CancelPathfind();
+            ResetPath();
         }
     }
 
@@ -78,23 +78,10 @@ public class CommandManager : MonoBehaviour
 
     public void AttackCommand(Character attacker, Character defender)
     {
-        MapPosition ap = attacker.MapPosition;
-        MapPosition dp = defender.MapPosition;
-        float xDiff = dp.X - ap.X;
-        float yDiff = dp.Y - ap.Y;
-        float x = xDiff == 0 ? 0 : xDiff / 5;
-        float y = yDiff == 0 ? 0 : yDiff / 5;
-        Vector2 direction = new Vector2(x, y);
-        int dmg = attacker.Damage;
-        attacker.GetComponent<AnimationManager>().TriggerFightAnimation(
-            direction,
-            defender.gameObject,
-            dmg);
-    }
-
-    private void CancelPathfind()
-    {
-        ResetPath();
+        EventManager.Instance.Raise<AnimationEvent>(new AnimationFightEvent(
+            AnimationStatus.Start,
+            attacker,
+            defender));
     }
 
     public Path FindPath(Tile source, Tile goal, int limit, Map map)
@@ -113,36 +100,39 @@ public class CommandManager : MonoBehaviour
         if (oldPath.Count <= 0) return;
         foreach (var tile in oldPath)
         {
-            if (tile) tile.Highlight(HighlightType.Old);
+            tile.Highlight(HighlightType.Old);
         }
-        oldPath = new List<Tile>();
-        path = null;
+        ResetPath();
     }
 
     private void ResetPath()
     {
         oldPath = new List<Tile>();
         path = null;
-        EventManager.Instance.Raise(new UnhighlightTilesEvent());
+        //EventManager.Instance.Raise(new UnhighlightTilesEvent());
     }
 
-    private void HighlightTiles()
+    private void HighlightPathTiles()
     {
         if (path != null)
         {
             if (path.Current == null) return;
             path.Current.Value.Highlight(HighlightType.Targeting);
-            oldPath.Add(path.Current.Value.GetComponent<Tile>());
+            oldPath.Add(path.Current.Value);
             while (path.Advance())
             {
-                path.Current.Value.GetComponent<Tile>().Highlight(HighlightType.Targeting);
-                oldPath.Add(path.Current.Value.GetComponent<Tile>());
+                path.Current.Value.Highlight(HighlightType.Targeting);
+                oldPath.Add(path.Current.Value);
             }
         }
     }
 
     private void OnMoveEvent(MoveCharacterEvent e)
     {
+        if (e.Character.IsGood)
+        {
+
+        }
         if (!e.Skip)
         {
             if (path == null)
