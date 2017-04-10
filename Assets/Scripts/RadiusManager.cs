@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class RadiusManager : MonoBehaviour
 {
-    private List<Tile> currentRadius;
-
     static RadiusManager instance;
     public static RadiusManager Instance
     {
@@ -59,14 +57,5 @@ public class RadiusManager : MonoBehaviour
             }
         }
         return costSoFar.Keys.ToList();
-    }
-
-    private void ToggleHighlightRadius(bool highlight)
-    {
-        HighlightType h = highlight ? HighlightType.Radius : HighlightType.None;
-        foreach (var tile in currentRadius)
-        {
-            tile.Highlight(h);
-        }
     }
 }

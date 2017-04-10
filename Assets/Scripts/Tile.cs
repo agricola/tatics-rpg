@@ -93,6 +93,11 @@ public class Tile : MonoBehaviour
         renderer.material.color = color;
     }
 
+    public void Highlight(Color color)
+    {
+        GetComponent<Renderer>().material.color = color;
+    }
+
     private void OnMouseEnter()
     {
         RaiseTileEvent(TileSelectType.Highlight);

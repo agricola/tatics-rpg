@@ -15,26 +15,73 @@ public class SpecialState : TargetState
 
     private void GenerateTilesBasedOnSelectType(SelectType selectType, int limit)
     {
+        MapPosition pos = selected.MapPosition;
+        ActionBasedOnSelectType(selectType,
+            SetMeleeTiles,
+            () => SetLineTiles(pos, limit),
+            () => targetableTiles =  RadiusManager.Instance.GetRadius(pos, limit));
+    }
+
+    private void ActionBasedOnSelectType(SelectType selectType,
+        Action melee = null,
+        Action line = null,
+        Action ranged = null,
+        Action def = null,
+        Action none = null)
+    {
         switch (selectType)
         {
             case SelectType.None:
+                if (none != null) none();
                 break;
             case SelectType.Melee:
-                SetMeleeTiles();
+                if (melee != null) melee();
                 break;
             case SelectType.Line:
-                GenerateLineTiles(selected.MapPosition, limit);
+                if (line != null) line();
                 break;
             case SelectType.Ranged:
-                targetableTiles = 
-                    RadiusManager.Instance.GetRadius(selected.MapPosition, limit);
+                if (ranged != null) ranged();
                 break;
             default:
+                if (def != null) def();
                 break;
         }
     }
 
-    private void GenerateLineTiles(MapPosition pos, int limit)
+    private bool IsTileTargetable(Tile tile)
+    {
+        var matches = targetableTiles.Where(x => x == tile);
+        return matches.Contains(tile);
+    }
+
+    private bool IsTargetValid(Tile tile)
+    {
+        bool valid = false;
+        switch (targetType)
+        {
+            case TargetType.Ally:
+                if (!tile.Occupant) return false;
+                valid = tile.Occupant.GetComponent<Character>().IsGood;
+                break;
+            case TargetType.Enemy:
+                if (!tile.Occupant) return false;
+                valid = !tile.Occupant.GetComponent<Character>().IsGood;
+                break;
+            case TargetType.Tile:
+                valid = !tile.Blocked;
+                break;
+            case TargetType.Character:
+                valid = tile.Occupant != null;
+                break;
+            default:
+                valid = false;
+                break;
+        }
+        return valid;
+    }
+
+    private void SetLineTiles(MapPosition pos, int limit)
     {
         Map m = GameManager.Instance.CurrentMap;
         List<Tile> neighbors = m.GetTilesInCross(pos, limit);

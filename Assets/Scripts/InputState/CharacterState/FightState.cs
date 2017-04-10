@@ -8,12 +8,12 @@ public class FightState : TargetState
 
     protected override void TileHighlight(Tile tile)
     {
-        HighlightNeighbors(targetableTiles, HighlightType.Radius, HighlightEvilTile);
-        HighlightEvilTile(tile, HighlightType.Targeting);
+        HighlightNeighbors(targetableTiles, true);
+        if (IsEvilTile(tile)) HighlightTarget(tile);
     }
     protected override void HighlightOther()
     {
-        HighlightNeighbors(targetableTiles, HighlightType.Radius, HighlightEvilTile);
+        HighlightNeighbors(targetableTiles, true);
     }
     protected override void TileAction(Tile tile)
     {
@@ -27,18 +27,14 @@ public class FightState : TargetState
         List<Tile> neighbors = m.GetNeighborsIncBlocked(selected.MapPosition);
         List<Tile> enemyNeighbors = neighbors.Where(x => x.Occupant != null).ToList();
         targetableTiles = enemyNeighbors;
-        HighlightNeighbors(enemyNeighbors, HighlightType.Radius, HighlightEvilTile);
     }
-    private void HighlightEvilTile(Tile tile, HighlightType type)
+    private bool IsEvilTile(Tile tile)
     {
         GameObject occ = tile.Occupant;
-        if (!occ) return;
+        if (!occ) return false;
         Character c = occ.GetComponent<Character>();
-        if (!c) return;
-        if (!c.IsGood)
-        {
-            tile.Highlight(type);
-        }
+        if (!c) return false;
+        return !c.IsGood;
     }
 
     private void InitiateFight(Character attacker, Character defender)
@@ -50,16 +46,22 @@ public class FightState : TargetState
         EventManager.Instance.Raise(new SetInputStateEvent(new NoSelectionState(), selected));
     }
 
-    private void HighlightNeighbors(
-        List<Tile> neighbors,
-        HighlightType type,
-        Action<Tile, HighlightType> action)
+    private void HighlightNeighbors(List<Tile> neighbors, bool isOn)
     {
-        if (neighbors.Count <= 0) return;
-        foreach (Tile tile in neighbors)
-        {
-            action(tile, type);
-        }
+        UpdateTilesEvent e = new UpdateTilesEvent(HighlightSelection.Main, neighbors, isOn);
+        EventManager.Instance.Raise<HighlightEvent>(e);
+    }
+
+    private void HighlightTarget(Tile target)
+    {
+        List<Tile> targets = new List<Tile>() { target };
+        UpdateTilesEvent e = new UpdateTilesEvent(HighlightSelection.Sub, targets, true);
+        EventManager.Instance.Raise<HighlightEvent>(e);
+    }
+
+    private void UnHighlightTarget()
+    {
+        EventManager.Instance.Raise<HighlightEvent>(new HighlightEvent(HighlightSelection.Sub));
     }
 
 }

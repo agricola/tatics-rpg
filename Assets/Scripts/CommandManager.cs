@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CommandManager : MonoBehaviour
@@ -59,7 +59,7 @@ public class CommandManager : MonoBehaviour
             findingPath = true;
             PathfindCreateEvent ev = e as PathfindCreateEvent;
             int limit = ev.limit;
-            ResetOldPath();
+            ResetPath();
             Map map = GameManager.Instance.CurrentMap;
             path = FindPath(ev.source, ev.goal, limit, map);
             HighlightPathTiles();
@@ -94,37 +94,21 @@ public class CommandManager : MonoBehaviour
         if (!path.Tiles.Contains(goal)) path = null;
         return path;
     }
-    
-    private void ResetOldPath()
-    {
-        if (oldPath.Count <= 0) return;
-        foreach (var tile in oldPath)
-        {
-            tile.Highlight(HighlightType.Old);
-        }
-        ResetPath();
-    }
 
     private void ResetPath()
     {
         oldPath = new List<Tile>();
         path = null;
-        //EventManager.Instance.Raise(new UnhighlightTilesEvent());
+        //HighlightEvent e = new HighlightEvent(HighlightSelection.Sub);
+        //EventManager.Instance.Raise<HighlightEvent>(e);
     }
 
     private void HighlightPathTiles()
     {
-        if (path != null)
-        {
-            if (path.Current == null) return;
-            path.Current.Value.Highlight(HighlightType.Targeting);
-            oldPath.Add(path.Current.Value);
-            while (path.Advance())
-            {
-                path.Current.Value.Highlight(HighlightType.Targeting);
-                oldPath.Add(path.Current.Value);
-            }
-        }
+        if (path == null || path.Current == null) return;
+        List<Tile> tiles = (path.Tiles).ToList();
+        UpdateTilesEvent e = new UpdateTilesEvent(HighlightSelection.Sub, tiles, true);
+        EventManager.Instance.Raise<HighlightEvent>(e);
     }
 
     private void OnMoveEvent(MoveCharacterEvent e)
@@ -139,7 +123,7 @@ public class CommandManager : MonoBehaviour
             {
                 return;
             }
-            LinkedList<Tile> movement = path.Tiles;
+            IEnumerable<Tile> movement = path.Tiles;
             if (e.Character.IsGood) ResetPath();
             e.Character.Moved = true;
             EventManager.Instance.Raise<AnimationEvent>(new AnimationWalkEvent(AnimationStatus.Start, e.Character.gameObject));
@@ -155,7 +139,7 @@ public class CommandManager : MonoBehaviour
         }
     }
 
-    public IEnumerator MoveCharacter(LinkedList<Tile> tiles, Character c)
+    public IEnumerator MoveCharacter(IEnumerable<Tile> tiles, Character c)
     {
         foreach (var tile in tiles)
         {

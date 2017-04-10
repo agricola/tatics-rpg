@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-public class MoveState : TargetState
+﻿public class MoveState : TargetState
 {
     protected override void CreateTargetableTiles()
     {

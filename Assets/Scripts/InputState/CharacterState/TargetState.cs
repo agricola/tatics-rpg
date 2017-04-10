@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public abstract class TargetState : ICharacterState
 {
@@ -13,6 +14,7 @@ public abstract class TargetState : ICharacterState
 
     protected virtual void HighlightOther()
     {
+        HighlightTiles();
         return;
     }
 
@@ -21,11 +23,12 @@ public abstract class TargetState : ICharacterState
         this.selected = selected;
         EventManager.Instance.Raise(new CombatMenuEvent());
         CreateTargetableTiles();
-        HighlightTiles(HighlightType.Radius);
+        HighlightTiles();
     }
 
     public void Exit()
     {
+        Debug.Log("exit");
         ClearTiles();
         if (requiresPathfindClear)
         {
@@ -34,18 +37,17 @@ public abstract class TargetState : ICharacterState
         // might need CancelpathfindEvent :DD
     }
 
-    private void HighlightTiles(HighlightType highlightType)
+    private void HighlightTiles()
     {
-        if (targetableTiles == null || targetableTiles.Count <= 0) return;
-        foreach (Tile tile in targetableTiles)
-        {
-            tile.Highlight(highlightType);
-        }
+        EventManager.Instance.Raise<HighlightEvent>(new UpdateTilesEvent(
+            HighlightSelection.Main,
+            targetableTiles,
+            true));
     }
 
     private void ClearTiles()
     {
-        HighlightTiles(HighlightType.None);
+        EventManager.Instance.Raise<HighlightEvent>(new ClearTilesEvent());
         targetableTiles = null; // is this even needed ????
     }
 
