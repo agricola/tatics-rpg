@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -48,14 +47,14 @@ public class FightState : TargetState
 
     private void HighlightNeighbors(List<Tile> neighbors, bool isOn)
     {
-        UpdateTilesEvent e = new UpdateTilesEvent(HighlightSelection.Main, neighbors, isOn);
+        HighlightEvent e = new HighlightEvent(HighlightSelection.Main, neighbors);
         EventManager.Instance.Raise<HighlightEvent>(e);
     }
 
     private void HighlightTarget(Tile target)
     {
         List<Tile> targets = new List<Tile>() { target };
-        UpdateTilesEvent e = new UpdateTilesEvent(HighlightSelection.Sub, targets, true);
+        HighlightEvent e = new HighlightEvent(HighlightSelection.Sub, targets);
         EventManager.Instance.Raise<HighlightEvent>(e);
     }
 

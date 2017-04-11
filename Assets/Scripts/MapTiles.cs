@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 [System.Serializable]
 public enum TileType { Ground, Wall, GoodSpawn, BadSpawn }

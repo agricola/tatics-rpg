@@ -6,8 +6,6 @@
 // Note: .NET 4.0 Tuples are immutable classes so they're *slightly* different.
 // ----------------------------------------------------------------------------
 
-using System;
-
 /// <summary>
 /// Utility class that simplifies cration of tuples by using
 /// method calls instead of constructor calls

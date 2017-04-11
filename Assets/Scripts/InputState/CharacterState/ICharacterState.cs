@@ -1,3 +1,1 @@
-﻿using System;
-
-public interface ICharacterState : IInputState { }
+﻿public interface ICharacterState : IInputState { }

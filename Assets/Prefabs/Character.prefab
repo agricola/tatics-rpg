@@ -21,11 +21,11 @@ GameObject:
   - component: {fileID: 4212523647103000}
   - component: {fileID: 212491609270911504}
   - component: {fileID: 114572278012544630}
-  - component: {fileID: 61596671285298330}
   - component: {fileID: 95304386680520478}
   - component: {fileID: 114500406262557514}
   - component: {fileID: 114606058411698738}
   - component: {fileID: 114882556002902110}
+  - component: {fileID: 61596079648434960}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -56,7 +56,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1258815535986354}
   m_LocalRotation: {x: -0.13052624, y: 0, z: 0, w: 0.9914449}
-  m_LocalPosition: {x: 3.2813108, y: -2.9305925, z: 0}
+  m_LocalPosition: {x: -12.668778, y: -2.0708623, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4773782585485582}
@@ -76,7 +76,7 @@ Transform:
   m_Father: {fileID: 4212523647103000}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &61596671285298330
+--- !u!61 &61596079648434960
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -88,7 +88,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.25}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.25}

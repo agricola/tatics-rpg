@@ -4,15 +4,14 @@ public enum HighlightSelection { Main, Sub }
 public class HighlightEvent : GameEvent
 {
     public HighlightSelection Selection { get; private set; }
-
-    public bool IsOn { get; private set;}
-    public HighlightEvent(HighlightSelection selection, bool isOn = false)
+    public List<Tile> Tiles { get; private set; }
+    public HighlightEvent(HighlightSelection selection, List<Tile> tiles = null)
     {
         Selection = selection;
-        IsOn = isOn;
+        Tiles = tiles;
     }
 }
-
+/* 
 public class UpdateTilesEvent : HighlightEvent
 {
     public List<Tile> Tiles { get; private set;}
@@ -29,4 +28,4 @@ public class ClearTilesEvent : HighlightEvent
     {
         
     }
-}
+}*/

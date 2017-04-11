@@ -28,7 +28,6 @@ public abstract class TargetState : ICharacterState
 
     public void Exit()
     {
-        Debug.Log("exit");
         ClearTiles();
         if (requiresPathfindClear)
         {
@@ -39,15 +38,14 @@ public abstract class TargetState : ICharacterState
 
     private void HighlightTiles()
     {
-        EventManager.Instance.Raise<HighlightEvent>(new UpdateTilesEvent(
+        EventManager.Instance.Raise(new HighlightEvent(
             HighlightSelection.Main,
-            targetableTiles,
-            true));
+            targetableTiles));
     }
 
     private void ClearTiles()
     {
-        EventManager.Instance.Raise<HighlightEvent>(new ClearTilesEvent());
+        EventManager.Instance.Raise(new HighlightEvent(HighlightSelection.Main));
         targetableTiles = null; // is this even needed ????
     }
 

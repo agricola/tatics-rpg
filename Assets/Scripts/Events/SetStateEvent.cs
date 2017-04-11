@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class SetStateEvent : GameEvent { }
+﻿public class SetStateEvent : GameEvent { }
 
 public class SetInputStateEvent : SetStateEvent
 {

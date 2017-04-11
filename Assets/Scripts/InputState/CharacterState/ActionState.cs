@@ -1,6 +1,4 @@
-﻿using System;
-
-public class ActionState : ICharacterState
+﻿public class ActionState : ICharacterState
 {
     public void Enter(Character selected = null, Map map = null)
     {

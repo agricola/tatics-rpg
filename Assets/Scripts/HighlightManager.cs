@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using UnityEngine;
 public class HighlightManager : MonoBehaviour
 {
@@ -32,75 +31,40 @@ public class HighlightManager : MonoBehaviour
 
     private void OnHighlightEvent(HighlightEvent e)
     {
-        if (e is UpdateTilesEvent)
+        if (e.Selection == HighlightSelection.Main)
         {
-            OnUpdateTilesEvent(e as UpdateTilesEvent);
-        }
-        else if (e is ClearTilesEvent)
-        {
-            OnClearTilesEvent(e as ClearTilesEvent);
+            ToggleHighlight(false, HighlightSelection.Main);
+            mainSelection = e.Tiles;
+            if (mainSelection != null) ToggleHighlight(true, HighlightSelection.Main);
         }
         else
         {
-            OnToggleHighlightEvent(e);
+            ToggleHighlight(false, HighlightSelection.Sub);
+            ToggleHighlight(true, HighlightSelection.Main);
+            subSelection = e.Tiles;
+            if (subSelection != null) ToggleHighlight(true, HighlightSelection.Sub);
         }
     }
 
-    private void OnClearTilesEvent(ClearTilesEvent e)
-    {
-        //Debug.Log("clear");
-        ToggleHighlight(false, HighlightSelection.Main);
-        //ToggleHighlight(false, HighlightSelection.Sub);
-        mainSelection = null;
-        subSelection = null;
-    }
-
-    private void OnUpdateTilesEvent(UpdateTilesEvent e)
-    {
-        Debug.Log("update " + e.Selection + " " + e.IsOn + e.Tiles.Count);
-        switch (e.Selection)
-        {
-            case HighlightSelection.Main:
-                mainSelection = e.Tiles;
-                break;
-            case HighlightSelection.Sub:
-                subSelection = e.Tiles;
-                break;
-            default:
-                break;
-        }
-        ToggleHighlight(e.IsOn, e.Selection);
-    }
-
-    private void OnToggleHighlightEvent(HighlightEvent e)
-    {
-        Debug.Log("toggle " + e.Selection + " " + e.IsOn);
-        ToggleHighlight(e.IsOn, e.Selection);
-    }
-
-    private void ToggleHighlight(bool isOn, HighlightSelection sel)
+    private void ToggleHighlight(bool on, HighlightSelection sel)
     {
         Color color = neutralColor;
         List<Tile> tiles = new List<Tile>();
         switch (sel)
         {
             case HighlightSelection.Main:
-                color = isOn ? mainColor : neutralColor;
+                color = on ? mainColor : neutralColor;
                 tiles = mainSelection;
+                ToggleHighlight(false, HighlightSelection.Sub);
                 break;
             case HighlightSelection.Sub:
-                color = isOn ? subColor : neutralColor;
+                color = on ? subColor : neutralColor;
                 tiles = subSelection;
-                if (isOn) HighlightTiles(mainSelection, mainColor);
                 break;
             default:
                 break;
         }
         HighlightTiles(tiles, color);
-        if (!isOn && sel == HighlightSelection.Sub)
-        {
-            HighlightTiles(mainSelection, mainColor);
-        }
     }
 
     private void HighlightTiles(List<Tile> tiles, Color color)

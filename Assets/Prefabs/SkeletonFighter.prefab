@@ -37,11 +37,11 @@ GameObject:
   - component: {fileID: 4111780039761212}
   - component: {fileID: 212848478935744094}
   - component: {fileID: 114396722639222990}
-  - component: {fileID: 61662966031077218}
   - component: {fileID: 95640102163230556}
   - component: {fileID: 114226513459145752}
   - component: {fileID: 114901426861364302}
   - component: {fileID: 114190030492188938}
+  - component: {fileID: 61146768182324078}
   m_Layer: 0
   m_Name: SkeletonFighter
   m_TagString: Untagged
@@ -56,7 +56,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1991713684609260}
   m_LocalRotation: {x: -0.13052624, y: 0, z: 0, w: 0.9914449}
-  m_LocalPosition: {x: 8.986999, y: -4.9804497, z: 0}
+  m_LocalPosition: {x: -11.684686, y: -1.3769913, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4154666069641784}
@@ -76,7 +76,7 @@ Transform:
   m_Father: {fileID: 4111780039761212}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &61662966031077218
+--- !u!61 &61146768182324078
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -88,7 +88,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.25}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.25}

@@ -107,7 +107,7 @@ public class CommandManager : MonoBehaviour
     {
         if (path == null || path.Current == null) return;
         List<Tile> tiles = (path.Tiles).ToList();
-        UpdateTilesEvent e = new UpdateTilesEvent(HighlightSelection.Sub, tiles, true);
+        HighlightEvent e = new HighlightEvent(HighlightSelection.Sub, tiles);
         EventManager.Instance.Raise<HighlightEvent>(e);
     }
 

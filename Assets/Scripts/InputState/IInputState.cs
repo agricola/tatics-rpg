@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public interface IInputState
+﻿public interface IInputState
 {
     void OnTileSelect(TileSelectEvent e);
     void OnCharacterSelect(CharacterSelectEvent e);

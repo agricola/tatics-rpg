@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class LevelMenu : Menu {
+﻿public class LevelMenu : Menu {
 
 	// Use this for initialization
 	void Start () {

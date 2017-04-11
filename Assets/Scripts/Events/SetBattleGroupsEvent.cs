@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-public class SetBattleGroupsEvent : GameEvent
+﻿public class SetBattleGroupsEvent : GameEvent
 {
     public BattleGroup good;
     public BattleGroup bad;
