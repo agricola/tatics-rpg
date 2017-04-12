@@ -54,20 +54,94 @@ public class Map : MonoBehaviour
         return (x < Width && y < Height && x >= 0 && y >= 0) ? true : false;
     }
 
+    //these tile shapes should be in a different class or something
     public List<Tile> GetTilesInCross(MapPosition origin, int limit)
     {
         List<Tile> tiles = new List<Tile>();
-        tiles.AddRange(GetTilesInLine(origin, true, -1, limit));
+        //Tile center = TileAtMapPosition(origin);
+        Debug.Log(limit);
+        MapPosition right = new MapPosition(origin.X + limit, origin.Y);
+        tiles = StraightPath(origin, CorrectMapPosition(right).MapPosition);
+        Debug.Log(tiles.Count);
+        MapPosition left = new MapPosition(origin.X - limit, origin.Y);
+        tiles.AddRange(StraightPath(origin, CorrectMapPosition(left).MapPosition));
+        Debug.Log(tiles.Count);
+        MapPosition up = new MapPosition(origin.X, origin.Y + limit);
+        tiles.AddRange(StraightPath(origin, CorrectMapPosition(up).MapPosition));
+        Debug.Log(tiles.Count);
+        MapPosition down = new MapPosition(origin.X, origin.Y - limit);
+        tiles.AddRange(StraightPath(origin, CorrectMapPosition(down).MapPosition));
+        Debug.Log(tiles.Count);
+        /*tiles.AddRange(GetTilesInLine(origin, true, -1, limit));
         tiles.AddRange(GetTilesInLine(origin, true, 1, limit));
         tiles.AddRange(GetTilesInLine(origin, false, -1, limit));
-        tiles.AddRange(GetTilesInLine(origin, false, 1, limit));
+        tiles.AddRange(GetTilesInLine(origin, false, 1, limit));*/
         return tiles;
+    }
+
+    // refactor this or some shit lol
+    public List<Tile> StraightPath(MapPosition origin, MapPosition goal, bool stopAtBlocked = true)
+    {
+        List<Tile> path = new List<Tile>();
+        int xDiff = goal.X - origin.X;
+        int yDiff = goal.Y - origin.Y;
+        if (xDiff == 0 && yDiff != 0)
+        {
+            int inc = yDiff > 0 ? 1 : -1;
+            for (int i = 0; i != yDiff + inc; i+=inc)
+            {
+                if (i == 0) continue;
+                MapPosition next = new MapPosition(origin.X, origin.Y + i);
+                if (IsWithinBounds(next))
+                {
+                    Tile nextTile = TileAtMapPosition(next);
+                    if (stopAtBlocked)
+                    {
+                        if(nextTile.Blocked)
+                        {
+                            break;
+                        }
+                    }
+                    path.Add(nextTile);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        else if (xDiff != 0 && yDiff == 0)
+        {
+            int inc = xDiff > 0 ? 1 : -1;
+            for (int i = 0; i != xDiff + inc; i+=inc)
+            {
+                if (i == 0) continue;
+                MapPosition next = new MapPosition(origin.X + i, origin.Y);
+                if (IsWithinBounds(next))
+                {
+                    Tile nextTile = TileAtMapPosition(next);
+                    if (stopAtBlocked)
+                    {
+                        if(nextTile.Blocked)
+                        {
+                            break;
+                        }
+                    }
+                    path.Add(nextTile);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        return path;
     }
 
     public List<Tile> GetTilesInLine(MapPosition origin, bool horizontal, int dir, int limit)
     {
         List<Tile> tiles = new List<Tile>();
-        for (int i = 1; i < limit + 1; i += dir)
+        for (int i = 1; i <= limit; i += dir)
         {
             MapPosition position = origin.Increment(horizontal, dir);
             Tile possible = IsWithinBounds(position) ? TileAtMapPosition(position) : null;
@@ -156,6 +230,36 @@ public class Map : MonoBehaviour
     public Tile TileAtMapPosition(MapPosition pos)
     {
         return tiles[pos.X, pos.Y];
+    }
+
+    public Tile CorrectMapPosition(MapPosition pos)
+    {
+        if (!IsWithinBounds(pos))
+        {
+            int x = pos.X;
+            int y = pos.Y;
+            if (x >= Width)
+            {
+                x = Width - 1;
+            }
+            else if ( x < 0)
+            {
+                x = 0;
+            }
+            if (y >= Height)
+            {
+                y = Height - 1;
+            }
+            else if ( y < 0)
+            {
+                y = 0;
+            }
+            return TileAtMapPosition(new MapPosition(x, y));
+        }
+        else
+        {
+            return tiles[pos.X, pos.Y];
+        }
     }
 
     private void Start()

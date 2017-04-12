@@ -117,6 +117,19 @@ public class InputManager : MonoBehaviour
         //TransitionToNoSelectionState();
     }
 
+    public void PressSpecialButton()
+    {/*
+        if (state is SelectionState)
+        {
+            SelectionState s = state as SelectionState;
+            s.TransitionToFightState();
+        }*/
+        ICharacterState s = new LineTargetState();
+        EventManager.Instance.Raise(new CharacterStateTransitionEvent(s));
+        // add fight finish listener
+        //TransitionToNoSelectionState();
+    }
+
     private void TransitionToNoSelectionState()
     {
         ChangeState(new NoSelectionState());

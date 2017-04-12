@@ -33,7 +33,6 @@ public abstract class TargetState : ICharacterState
         {
             EventManager.Instance.Raise<PathfindEvent>(new CancelPathfindEvent());
         }
-        // might need CancelpathfindEvent :DD
     }
 
     private void HighlightTiles()
