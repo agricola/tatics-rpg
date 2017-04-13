@@ -62,11 +62,11 @@ public class SpecialState : TargetState
         {
             case TargetType.Ally:
                 if (!tile.Occupant) return false;
-                valid = tile.Occupant.GetComponent<Character>().IsGood;
+                valid = tile.Occupant.IsGood;
                 break;
             case TargetType.Enemy:
                 if (!tile.Occupant) return false;
-                valid = !tile.Occupant.GetComponent<Character>().IsGood;
+                valid = !tile.Occupant.IsGood;
                 break;
             case TargetType.Tile:
                 valid = !tile.Blocked;
@@ -99,11 +99,8 @@ public class SpecialState : TargetState
 
         private void HighlightEvilTile(Tile tile, HighlightType type)
     {
-        GameObject occ = tile.Occupant;
-        if (!occ) return;
-        Character c = occ.GetComponent<Character>();
-        if (!c) return;
-        if (!c.IsGood)
+        Character occ = tile.Occupant;
+        if (occ && !occ.IsGood)
         {
             tile.Highlight(type);
         }

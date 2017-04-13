@@ -43,7 +43,7 @@ public class EnemyAI : MonoBehaviour
             Character target = targets.Dequeue();
             map.TileAtMapPosition(target.MapPosition).Occupant = null;
             bestPath = findPath(map, target.MapPosition);
-            map.TileAtMapPosition(target.MapPosition).Occupant = target.gameObject;
+            map.TileAtMapPosition(target.MapPosition).Occupant = target;
             if (targets.Count <= 0)
             {
                 break;

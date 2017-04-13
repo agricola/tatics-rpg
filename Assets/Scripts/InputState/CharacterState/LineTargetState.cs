@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class LineTargetState : TargetState
 {
@@ -33,7 +32,6 @@ public class LineTargetState : TargetState
     private List<Tile> LineTiles(MapPosition pos, int limit)
     {
         Map m = GameManager.Instance.CurrentMap;
-        if (!m) return null;
         List<Tile> neighbors = m.GetTilesInCross(pos, limit);
         return neighbors;
     }
@@ -41,7 +39,6 @@ public class LineTargetState : TargetState
     private List<Tile> StraightLine(MapPosition pos, MapPosition goal)
     {
         Map m = GameManager.Instance.CurrentMap;
-        if (!m) return null;
         List<Tile> neighbors = m.StraightPath(pos, goal);
         return neighbors;
     }

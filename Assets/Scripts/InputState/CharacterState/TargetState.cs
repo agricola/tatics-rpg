@@ -69,7 +69,14 @@ public abstract class TargetState : ICharacterState
         }
         if (e.selectType == TileSelectType.Highlight)
         {
-            TileHighlight(e.tile);
+            if (e.tile.Occupant == selected)
+            {
+                HighlightTiles();
+            }
+            else
+            {
+                TileHighlight(e.tile);
+            }
         }
         else if (e.selectType == TileSelectType.Move)
         {

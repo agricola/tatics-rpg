@@ -31,7 +31,6 @@ public class SelectionState : IInputState
 
     private void OnCharStateTransition(CharacterStateTransitionEvent e)
     {
-        Debug.Log("trans...");
         TransitionCharacterState(e.CharacterState);
     }
 

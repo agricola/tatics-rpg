@@ -19,7 +19,7 @@ public class Tile : MonoBehaviour
     [SerializeField]
     private MapPosition mapPosition;
     [SerializeField]
-    private GameObject occupant;
+    private Character occupant;
     private bool modified = false;
 
     public bool Blocked
@@ -47,7 +47,7 @@ public class Tile : MonoBehaviour
             mapPosition = value;
         }
     }
-    public GameObject Occupant
+    public Character Occupant
     {
         get
         {
@@ -125,9 +125,8 @@ public class Tile : MonoBehaviour
             anim.CheckScale(pos.x - obj.transform.position.x);
         }
         obj.transform.position = pos;
-        occupant = obj;
-        Character c = occupant.GetComponent<Character>();
-        if (c) c.MapPosition = mapPosition;
+        occupant = obj.GetComponent<Character>();
+        if (occupant) occupant.MapPosition = mapPosition;
         EventManager.Instance.Raise(new TileChangeEvent(obj));
         EventManager.Instance.AddListener<TileChangeEvent>(OnTileChange);
         return true;
@@ -140,7 +139,7 @@ public class Tile : MonoBehaviour
 
     private void OnTileChange(TileChangeEvent e)
     {
-        if (e.leaver == occupant)
+        if (e.leaver == occupant.gameObject)
         {
             occupant = null;
             EventManager.Instance.RemoveListener<TileChangeEvent>(OnTileChange);

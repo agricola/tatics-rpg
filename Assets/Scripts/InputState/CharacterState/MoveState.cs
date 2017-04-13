@@ -1,4 +1,6 @@
-﻿public class MoveState : TargetState
+﻿using UnityEngine;
+
+public class MoveState : TargetState
 {
     protected override void CreateTargetableTiles()
     {
@@ -20,7 +22,7 @@
 
     private void IssueMoveCommand(Tile tile)
     {
-        bool skip = tile.Occupant == selected.gameObject;
+        bool skip = tile.Occupant == selected;
         EventManager.Instance.Raise(new MoveCharacterEvent(selected, skip));
     }
 

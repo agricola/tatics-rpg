@@ -17,7 +17,7 @@ public class FightState : TargetState
     protected override void TileAction(Tile tile)
     {
         if (!tile.Occupant) return;
-        InitiateFight(selected, tile.Occupant.GetComponent<Character>());
+        InitiateFight(selected, tile.Occupant);
     }
 
     protected override void CreateTargetableTiles()
@@ -29,11 +29,9 @@ public class FightState : TargetState
     }
     private bool IsEvilTile(Tile tile)
     {
-        GameObject occ = tile.Occupant;
+        Character occ = tile.Occupant;
         if (!occ) return false;
-        Character c = occ.GetComponent<Character>();
-        if (!c) return false;
-        return !c.IsGood;
+        return !occ.IsGood;
     }
 
     private void InitiateFight(Character attacker, Character defender)

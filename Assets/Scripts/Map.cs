@@ -58,24 +58,14 @@ public class Map : MonoBehaviour
     public List<Tile> GetTilesInCross(MapPosition origin, int limit)
     {
         List<Tile> tiles = new List<Tile>();
-        //Tile center = TileAtMapPosition(origin);
-        Debug.Log(limit);
         MapPosition right = new MapPosition(origin.X + limit, origin.Y);
         tiles = StraightPath(origin, CorrectMapPosition(right).MapPosition);
-        Debug.Log(tiles.Count);
         MapPosition left = new MapPosition(origin.X - limit, origin.Y);
         tiles.AddRange(StraightPath(origin, CorrectMapPosition(left).MapPosition));
-        Debug.Log(tiles.Count);
         MapPosition up = new MapPosition(origin.X, origin.Y + limit);
         tiles.AddRange(StraightPath(origin, CorrectMapPosition(up).MapPosition));
-        Debug.Log(tiles.Count);
         MapPosition down = new MapPosition(origin.X, origin.Y - limit);
         tiles.AddRange(StraightPath(origin, CorrectMapPosition(down).MapPosition));
-        Debug.Log(tiles.Count);
-        /*tiles.AddRange(GetTilesInLine(origin, true, -1, limit));
-        tiles.AddRange(GetTilesInLine(origin, true, 1, limit));
-        tiles.AddRange(GetTilesInLine(origin, false, -1, limit));
-        tiles.AddRange(GetTilesInLine(origin, false, 1, limit));*/
         return tiles;
     }
 
